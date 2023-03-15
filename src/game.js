@@ -28,7 +28,7 @@ export class Game {
     // create a scene
     this.scene = new THREE.Scene();
 
-    // call overriden method from child
+    // call overridden method from child
     this.onInitialize();
 
     //

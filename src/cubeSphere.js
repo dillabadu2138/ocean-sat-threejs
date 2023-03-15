@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-import { vec3 } from 'gl-matrix';
+import { vec3, vec2 } from 'gl-matrix';
 
 export class CubeSphere {
   constructor(resolution) {
     this.resolution = resolution;
 
+    // create a list of geometries
     this.geometries = this.generateGeometries(resolution);
   }
 
@@ -31,12 +32,14 @@ export class CubeSphere {
 
   createFace(resolution, normal) {
     // preallocate
-    const numVertices = resolution * resolution * 3;
+    const numVertices = resolution * resolution;
     const numIndices = (resolution - 1) * (resolution - 1) * 2 * 3;
-    const vertices = new Float32Array(numVertices);
+    const vertices = new Float32Array(numVertices * 3);
     const indices = new Uint32Array(numIndices);
+    const uvs = new Float32Array(numVertices * 2);
+    const normals = new Float32Array(numVertices * 3);
 
-    // axes perpendicular to normal
+    // create axes perpendicular to normal
     const normalX = normal[0];
     const normalY = normal[1];
     const normalZ = normal[2];
@@ -68,8 +71,14 @@ export class CubeSphere {
 
         // point on unit sphere
         let pointOnUnitSphere = this.cubePointToSpherePoint(pointOnUnitCube);
-        vertices.set(pointOnUnitSphere, i * 3);
 
+        // vertices, normals, uvs
+        vertices.set(pointOnUnitSphere, i * 3);
+        normals.set(pointOnUnitSphere, i * 3);
+        let uv = vec2.fromValues(x / (resolution - 1), y / (resolution - 1));
+        uvs.set(uv, i * 2);
+
+        // indices
         if (x !== resolution - 1 && y !== resolution - 1) {
           // first triangle
           indices[triangleIndex] = i;
@@ -90,6 +99,8 @@ export class CubeSphere {
     // create geometry
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
     return geometry;

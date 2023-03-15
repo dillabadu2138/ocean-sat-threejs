@@ -2,7 +2,6 @@ import './styles.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
-import { vec3 } from 'gl-matrix';
 
 import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
@@ -14,6 +13,9 @@ class Demo extends Game {
   }
 
   onInitialize() {
+    // add axeshelper
+    this.scene.add(new THREE.AxesHelper(5));
+
     // create a control
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
@@ -28,13 +30,12 @@ class Demo extends Game {
     const combinedGeometry = BufferGeometryUtils.mergeBufferGeometries([
       ...this.cubeSphere.geometries,
     ]);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
+
+    // add to scene
+    const material = new THREE.MeshNormalMaterial({
       wireframe: true,
-      wireframeLinewidth: 1,
     });
     this.combinedMesh = new THREE.Mesh(combinedGeometry, material);
-
     this.scene.add(this.combinedMesh);
   }
 }
