@@ -16,6 +16,10 @@ class Demo extends Game {
     // add axeshelper
     this.scene.add(new THREE.AxesHelper(5));
 
+    // add light
+    const light = new THREE.AmbientLight(0xffffff);
+    this.scene.add(light);
+
     // create a control
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
@@ -31,10 +35,13 @@ class Demo extends Game {
       ...this.cubeSphere.geometries,
     ]);
 
+    // load texture
+    const colormapTexture = new THREE.TextureLoader().load(
+      'img/world.topo.bathy.200409.3x5400x2700.jpg'
+    );
+    const material = new THREE.MeshStandardMaterial({ map: colormapTexture });
+
     // add to scene
-    const material = new THREE.MeshNormalMaterial({
-      wireframe: true,
-    });
     this.combinedMesh = new THREE.Mesh(combinedGeometry, material);
     this.scene.add(this.combinedMesh);
   }
