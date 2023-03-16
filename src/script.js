@@ -6,6 +6,10 @@ import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUti
 import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
 
+// shaders
+import colormapVertexShader from './shaders/colormap/colormap-vertex-shader';
+import colormapFragmentShader from './shaders/colormap/colormap-fragment-shader';
+
 class Demo extends Game {
   constructor() {
     // calls the parent class's constructor
@@ -27,19 +31,34 @@ class Demo extends Game {
     controls.update();
 
     // create a cube sphere
-    const resolution = 50;
+    const resolution = 100;
     this.cubeSphere = new CubeSphere(resolution);
+    // console.log(this.cubeSphere.geometries);
 
     // combine all geometries into one geometry
     const combinedGeometry = BufferGeometryUtils.mergeBufferGeometries([
       ...this.cubeSphere.geometries,
     ]);
+    // console.log(combinedGeometry);
 
     // load texture
-    const colormapTexture = new THREE.TextureLoader().load(
+    const colorMapTexture = new THREE.TextureLoader().load(
       'img/world.topo.bathy.200409.3x5400x2700.jpg'
     );
-    const material = new THREE.MeshStandardMaterial({ map: colormapTexture });
+    colorMapTexture.minFilter = THREE.LinearMipMapLinearFilter;
+    colorMapTexture.magFilter = THREE.NearestFilter;
+    colorMapTexture.generateMipmaps = false;
+    // console.log(colorMapTexture);
+
+    const material = new THREE.RawShaderMaterial({
+      uniforms: {
+        uColorMap: {
+          value: colorMapTexture,
+        },
+      },
+      vertexShader: colormapVertexShader,
+      fragmentShader: colormapFragmentShader,
+    });
 
     // add to scene
     this.combinedMesh = new THREE.Mesh(combinedGeometry, material);
