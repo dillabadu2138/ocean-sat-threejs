@@ -2,6 +2,7 @@ import './styles.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { GUI } from 'dat.gui';
 
 import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
@@ -17,6 +18,22 @@ class Demo extends Game {
   }
 
   onInitialize() {
+    // create dat.gui
+    this.gui = new GUI();
+
+    // gui for camera frustum
+    const CameraRollup = this.gui.addFolder('Camera Frustum');
+    CameraRollup.add(this.camera, 'fov', 50, 100).onChange(() =>
+      this.camera.updateProjectionMatrix()
+    );
+    CameraRollup.add(this.camera, 'near', 0.1, this.camera.far).onChange(() =>
+      this.camera.updateProjectionMatrix()
+    );
+    CameraRollup.add(this.camera, 'far', 100, 10000).onChange(() =>
+      this.camera.updateProjectionMatrix()
+    );
+    CameraRollup.open();
+
     // add axeshelper
     this.scene.add(new THREE.AxesHelper(5));
 
@@ -33,13 +50,11 @@ class Demo extends Game {
     // create a cube sphere
     const resolution = 100;
     this.cubeSphere = new CubeSphere(resolution);
-    // console.log(this.cubeSphere.geometries);
 
     // combine all geometries into one geometry
     const combinedGeometry = BufferGeometryUtils.mergeBufferGeometries([
       ...this.cubeSphere.geometries,
     ]);
-    // console.log(combinedGeometry);
 
     // load texture
     const colorMapTexture = new THREE.TextureLoader().load(
@@ -48,8 +63,8 @@ class Demo extends Game {
     colorMapTexture.minFilter = THREE.LinearMipMapLinearFilter;
     colorMapTexture.magFilter = THREE.NearestFilter;
     colorMapTexture.generateMipmaps = false;
-    // console.log(colorMapTexture);
 
+    // create material
     const material = new THREE.RawShaderMaterial({
       uniforms: {
         uColorMap: {

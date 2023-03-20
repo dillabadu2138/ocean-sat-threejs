@@ -23,7 +23,7 @@ export class Game {
     const near = 1.0;
     const far = 1000.0;
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this.camera.position.set(0, 2, 2);
+    this.camera.position.set(-2, 2, -2);
 
     // create a scene
     this.scene = new THREE.Scene();
