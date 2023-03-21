@@ -18,10 +18,10 @@ export class Game {
     window.addEventListener('resize', () => this.onWindowResize(), false);
 
     // create a camera
-    const fov = 75;
+    const fov = 40;
     const aspect = window.innerWidth / window.innerHeight;
-    const near = 1.0;
-    const far = 1000.0;
+    const near = 0.1;
+    const far = 500.0;
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     this.camera.position.set(-2, 2, -2);
 
