@@ -14,6 +14,8 @@ import colormapVertexShader from './shaders/colormap/colormap-vertex-shader';
 import colormapFragmentShader from './shaders/colormap/colormap-fragment-shader';
 import chlorophyllVertexShader from './shaders/chlorophyll/chlorophyll-vertex-shader';
 import chlorophyllFragmentShader from './shaders/chlorophyll/chlorophyll-fragment-shader';
+import cloudVertexShader from './shaders/cloud/cloud-vertex-shader';
+import cloudFragmentShader from './shaders/cloud/cloud-fragment-shader';
 
 class Demo extends Game {
   constructor() {
@@ -88,8 +90,9 @@ class Demo extends Game {
 
     // load Chlorophyll data and add to scene
     this.loadChlorophyllData();
-    if (this.chlGeometry) {
-    }
+
+    // load cloud data and add to scene
+    this.loadCloudData();
   }
 
   loadSatellite() {
@@ -180,6 +183,75 @@ class Demo extends Game {
         // draw points
         this.chlMesh = new THREE.Points(this.chlGeometry, this.chlMaterial);
         this.scene.add(this.chlMesh);
+      },
+
+      // onProgress callback
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+      },
+
+      // onError callback
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  loadCloudData() {
+    // load a csv file
+    const loader = new THREE.FileLoader();
+    loader.load(
+      // resource URL
+      'assets/data/cloud/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
+
+      // onLoad callback
+      (data) => {
+        const rows = data.split('\n').slice(1); // skip header row
+
+        // create an instance of instanced buffer geometry
+        this.cloudGeometry = new THREE.InstancedBufferGeometry();
+
+        // preallocate typed arrays
+        const instanceWorldPosition = new Float32Array(rows.length * 2); // xy
+        const instanceCloudColor = new Float32Array(rows.length * 3); // rgb
+
+        // iterate over rows
+        for (let i = 0; i < rows.length; i++) {
+          const values = rows[i].split(','); // lon, lat, val
+
+          // instanced position
+          instanceWorldPosition[i * 2] = values[0]; // lon
+          instanceWorldPosition[i * 2 + 1] = values[1]; // lat
+
+          // instanced cloud rgb
+          instanceCloudColor[i * 3] = values[2];
+          instanceCloudColor[i * 3 + 1] = values[3];
+          instanceCloudColor[i * 3 + 2] = values[4];
+        }
+
+        // set attributes to this geometry
+        this.cloudGeometry.setAttribute(
+          'position',
+          new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
+        );
+        this.cloudGeometry.setAttribute(
+          'instanceWorldPosition',
+          new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
+        );
+        this.cloudGeometry.setAttribute(
+          'instanceCloudColor',
+          new THREE.InstancedBufferAttribute(instanceCloudColor, 3)
+        );
+
+        // create material
+        this.cloudMaterial = new THREE.RawShaderMaterial({
+          vertexShader: cloudVertexShader,
+          fragmentShader: cloudFragmentShader,
+        });
+
+        // draw points
+        this.cloudMesh = new THREE.Points(this.cloudGeometry, this.cloudMaterial);
+        this.scene.add(this.cloudMesh);
       },
 
       // onProgress callback
