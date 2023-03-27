@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'dat.gui';
+import * as topojson from 'topojson-client';
 
 // components
 import { Game } from './game.js';
@@ -16,6 +17,8 @@ import chlorophyllVertexShader from './shaders/chlorophyll/chlorophyll-vertex-sh
 import chlorophyllFragmentShader from './shaders/chlorophyll/chlorophyll-fragment-shader';
 import cloudVertexShader from './shaders/cloud/cloud-vertex-shader';
 import cloudFragmentShader from './shaders/cloud/cloud-fragment-shader';
+import coastlineVertexShader from './shaders/coastline/coastline-vertex-shader';
+import coastlineFragmentShader from './shaders/coastline/coastline-fragment-shader';
 
 class Demo extends Game {
   constructor() {
@@ -93,6 +96,9 @@ class Demo extends Game {
 
     // load cloud data and add to scene
     this.loadCloudData();
+
+    // load coastline and add to scene
+    this.loadCoastline();
   }
 
   loadSatellite() {
@@ -264,6 +270,72 @@ class Demo extends Game {
         console.log(err);
       }
     );
+  }
+
+  loadCoastline() {
+    // load a topojson file
+    const loader = new THREE.FileLoader();
+    loader.load(
+      // resource URL
+      'assets/data/coastline/earth-topo.json',
+
+      // onLoad callback
+      (data) => {
+        // parse the data into JSON object
+        const topology = JSON.parse(data);
+
+        // convert topojson to geojson
+        const geojson = topojson.feature(topology, topology.objects.coastline_10m);
+
+        // create coastline geometries
+        this.coastlineGeometries = this.createCoastlineGeometries(geojson);
+
+        // create material
+        this.coastlineMaterial = new THREE.RawShaderMaterial({
+          uniforms: {
+            uLineColor: {
+              value: new Float32Array([1.0, 1.0, 1.0]),
+            },
+          },
+          vertexShader: coastlineVertexShader,
+          fragmentShader: coastlineFragmentShader,
+        });
+
+        // iterate over geometries
+        this.coastlineMeshes = [];
+        for (let i = 0; i < this.coastlineGeometries.length; i++) {
+          const mesh = new THREE.Line(this.coastlineGeometries[i], this.coastlineMaterial);
+          mesh.frustumCulled = false;
+          this.scene.add(mesh);
+          this.coastlineMeshes.push(mesh);
+        }
+      }
+    );
+  }
+
+  // create coastline geometries
+  createCoastlineGeometries(json) {
+    const features = json.features;
+
+    // preallocate array
+    const geometriesArray = [];
+
+    // loop over every feature
+    for (const feature of features) {
+      const coordinates = feature.geometry.coordinates;
+
+      // create geometry
+      const points = [];
+      for (const coordinate of coordinates) {
+        points.push(new THREE.Vector2(coordinate[0], coordinate[1]));
+      }
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+      // add geometry to geometries array
+      geometriesArray.push(geometry);
+    }
+
+    return geometriesArray;
   }
 }
 

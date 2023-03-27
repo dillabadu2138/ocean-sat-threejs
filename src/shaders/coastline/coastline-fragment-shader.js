@@ -1,0 +1,14 @@
+export default `#version 300 es
+
+precision highp float;
+
+// uniforms
+uniform vec3 uLineColor;
+
+// we need to declare an output for the fragment shader
+out vec4 fragColor;
+
+void main() {
+  fragColor = vec4(uLineColor.rgb, 1.0);
+}
+`;
