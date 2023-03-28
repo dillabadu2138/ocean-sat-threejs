@@ -99,6 +99,9 @@ class Demo extends Game {
 
     // load coastline and add to scene
     this.loadCoastline();
+
+    // load space cube texture background and add to scene
+    this.loadSpaceCubeTexture();
   }
 
   loadSatellite() {
@@ -336,6 +339,19 @@ class Demo extends Game {
     }
 
     return geometriesArray;
+  }
+
+  loadSpaceCubeTexture() {
+    const loader = new THREE.CubeTextureLoader();
+    const cubeTexture = loader.load([
+      './assets/images/space-posx.jpg',
+      './assets/images/space-negx.jpg',
+      './assets/images/space-posy.jpg',
+      './assets/images/space-negy.jpg',
+      './assets/images/space-posz.jpg',
+      './assets/images/space-negz.jpg',
+    ]);
+    this.scene.background = cubeTexture;
   }
 }
 
