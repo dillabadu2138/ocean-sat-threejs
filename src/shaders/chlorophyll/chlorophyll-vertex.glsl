@@ -1,4 +1,4 @@
-export default `#version 300 es
+#version 300 es
 
 precision highp float;
 
@@ -9,10 +9,6 @@ uniform mat4 projectionMatrix;
 // attributes
 in vec3 position;
 in vec2 instanceWorldPosition; // x y translation offsets for an instance
-in vec3 instanceCloudColor;
-
-// varyings
-out vec3 vColor;
 
 // calculate point on unit sphere given longitude and latitude
 vec3 convertCoordinateToPoint(vec2 coord){
@@ -25,9 +21,6 @@ vec3 convertCoordinateToPoint(vec2 coord){
 }
 
 void main(){
-  // normalize the float in the [0,1] range
-  vColor = instanceCloudColor / 255.0;
-
   // set point position
   vec2 coords = position.xy + instanceWorldPosition;
 
@@ -35,6 +28,5 @@ void main(){
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 
-  gl_PointSize = 2.0;
+  gl_PointSize = 1.0;
 }
-`;

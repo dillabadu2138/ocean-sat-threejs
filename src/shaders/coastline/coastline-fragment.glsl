@@ -1,4 +1,4 @@
-export default `#version 300 es
+#version 300 es
 
 precision highp float;
 
@@ -11,4 +11,3 @@ out vec4 fragColor;
 void main() {
   fragColor = vec4(uLineColor.rgb, 1.0);
 }
-`;

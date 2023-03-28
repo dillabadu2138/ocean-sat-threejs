@@ -1,4 +1,4 @@
-export default `#version 300 es
+#version 300 es
 
 precision highp float;
 
@@ -8,7 +8,6 @@ uniform mat4 projectionMatrix;
 
 // attributes
 in vec3 position;
-in vec2 instanceWorldPosition; // x y translation offsets for an instance
 
 // calculate point on unit sphere given longitude and latitude
 vec3 convertCoordinateToPoint(vec2 coord){
@@ -22,12 +21,9 @@ vec3 convertCoordinateToPoint(vec2 coord){
 
 void main(){
   // set point position
-  vec2 coords = position.xy + instanceWorldPosition;
+  vec2 coords = position.xy;
 
   vec3 pos = convertCoordinateToPoint(coords);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-
-  gl_PointSize = 1.0;
 }
-`;

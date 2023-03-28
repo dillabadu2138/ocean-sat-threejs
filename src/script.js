@@ -11,14 +11,14 @@ import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
 
 // shaders
-import colormapVertexShader from './shaders/colormap/colormap-vertex-shader';
-import colormapFragmentShader from './shaders/colormap/colormap-fragment-shader';
-import chlorophyllVertexShader from './shaders/chlorophyll/chlorophyll-vertex-shader';
-import chlorophyllFragmentShader from './shaders/chlorophyll/chlorophyll-fragment-shader';
-import cloudVertexShader from './shaders/cloud/cloud-vertex-shader';
-import cloudFragmentShader from './shaders/cloud/cloud-fragment-shader';
-import coastlineVertexShader from './shaders/coastline/coastline-vertex-shader';
-import coastlineFragmentShader from './shaders/coastline/coastline-fragment-shader';
+import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
+import colormapFragmentShader from './shaders/colormap/colormap-fragment.glsl';
+import chlorophyllVertexShader from './shaders/chlorophyll/chlorophyll-vertex.glsl';
+import chlorophyllFragmentShader from './shaders/chlorophyll/chlorophyll-fragment.glsl';
+import cloudVertexShader from './shaders/cloud/cloud-vertex.glsl';
+import cloudFragmentShader from './shaders/cloud/cloud-fragment.glsl';
+import coastlineVertexShader from './shaders/coastline/coastline-vertex.glsl';
+import coastlineFragmentShader from './shaders/coastline/coastline-fragment.glsl';
 
 class Demo extends Game {
   constructor() {

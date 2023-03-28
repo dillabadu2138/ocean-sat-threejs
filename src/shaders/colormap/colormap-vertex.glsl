@@ -1,4 +1,4 @@
-export default `#version 300 es
+#version 300 es
 
 precision highp float;
 
@@ -18,4 +18,3 @@ void main(){
 
   vPosition = position.xyz;
 }
-`;

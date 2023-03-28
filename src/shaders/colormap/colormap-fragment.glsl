@@ -1,4 +1,4 @@
-export default `#version 300 es
+#version 300 es
 
 precision mediump float;
 
@@ -33,4 +33,3 @@ void main() {
   vec2 texCoord = convertPointToTexCoord(vPosition);
   fragColor = texture(uColorMap, texCoord);
 }
-`;
