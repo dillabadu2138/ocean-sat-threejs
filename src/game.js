@@ -30,8 +30,8 @@ export class Game {
 
   renderScene() {
     // wait for loading to complete, then start rotating
-    if (this.combinedMesh && this.chlMesh && this.cloudMesh && this.coastlineMeshes) {
-      this.combinedMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
+    if (this.earthMesh && this.chlMesh && this.cloudMesh && this.coastlineMeshes) {
+      this.earthMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
       this.cloudMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
       this.chlMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
       this.coastlineMeshes.forEach((mesh, i) =>

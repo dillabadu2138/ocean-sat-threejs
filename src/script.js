@@ -27,21 +27,11 @@ class OceanSatelliteDemo extends Game {
   }
 
   onInitialize() {
-    // create dat.gui
-    this.gui = new GUI();
+    // create GUI
+    this.createGUI();
 
-    // gui for camera frustum
-    const CameraRollup = this.gui.addFolder('Camera Frustum');
-    CameraRollup.add(this.graphics.camera, 'fov', 30, 100).onChange(() =>
-      this.graphics.camera.updateProjectionMatrix()
-    );
-    CameraRollup.add(this.graphics.camera, 'near', 0.1, this.graphics.camera.far).onChange(() =>
-      this.graphics.camera.updateProjectionMatrix()
-    );
-    CameraRollup.add(this.graphics.camera, 'far', 100, 10000).onChange(() =>
-      this.graphics.camera.updateProjectionMatrix()
-    );
-    CameraRollup.open();
+    // create controls
+    this.createControls();
 
     // add axeshelper
     this.graphics.scene.add(new THREE.AxesHelper(5));
@@ -50,18 +40,63 @@ class OceanSatelliteDemo extends Game {
     const light = new THREE.AmbientLight(0xffffff);
     this.graphics.scene.add(light);
 
-    // create a control
-    const controls = new OrbitControls(this.graphics.camera, this.graphics.renderer.domElement);
-    controls.enableDamping = true;
-    controls.target.set(0, 0, 0);
-    controls.update();
+    // load Earth
+    this.loadEarth();
 
+    // load satellite model
+    // this.loadSatellite();
+
+    // load Chlorophyll data and add to scene
+    this.loadChlorophyllData();
+
+    // load cloud data and add to scene
+    this.loadCloudData();
+
+    // load coastline and add to scene
+    this.loadCoastline();
+
+    // load space cube texture background and add to scene
+    this.loadSpaceCubeTexture();
+  }
+
+  createGUI() {
+    // create dat.gui
+    this.gui = new GUI();
+
+    // create gui parameters
+    this.guiParams = {
+      camera: this.graphics.camera,
+    };
+
+    // add gui for camera frustum
+    const CameraRollup = this.gui.addFolder('Camera Frustum');
+    CameraRollup.add(this.guiParams.camera, 'fov', 30, 100).onChange(() =>
+      this.guiParams.camera.updateProjectionMatrix()
+    );
+    CameraRollup.add(this.guiParams.camera, 'near', 0.1, this.graphics.camera.far).onChange(() =>
+      this.guiParams.camera.updateProjectionMatrix()
+    );
+    CameraRollup.add(this.guiParams.camera, 'far', 100, 10000).onChange(() =>
+      this.guiParams.camera.updateProjectionMatrix()
+    );
+    CameraRollup.open();
+  }
+
+  createControls() {
+    // create a control
+    this.controls = new OrbitControls(this.graphics.camera, this.graphics.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.target.set(0, 0, 0);
+    this.controls.update();
+  }
+
+  loadEarth() {
     // create a cube sphere
     const resolution = 100;
     this.cubeSphere = new CubeSphere(resolution);
 
     // combine all geometries into one geometry
-    const combinedGeometry = BufferGeometryUtils.mergeBufferGeometries([
+    const earthGeometry = BufferGeometryUtils.mergeBufferGeometries([
       ...this.cubeSphere.geometries,
     ]);
 
@@ -85,23 +120,8 @@ class OceanSatelliteDemo extends Game {
     });
 
     // add to scene
-    this.combinedMesh = new THREE.Mesh(combinedGeometry, material);
-    this.graphics.scene.add(this.combinedMesh);
-
-    // load satellite model
-    // this.loadSatellite();
-
-    // load Chlorophyll data and add to scene
-    this.loadChlorophyllData();
-
-    // load cloud data and add to scene
-    this.loadCloudData();
-
-    // load coastline and add to scene
-    this.loadCoastline();
-
-    // load space cube texture background and add to scene
-    this.loadSpaceCubeTexture();
+    this.earthMesh = new THREE.Mesh(earthGeometry, material);
+    this.graphics.scene.add(this.earthMesh);
   }
 
   loadSatellite() {
@@ -331,6 +351,7 @@ let APP = null;
 
 function main() {
   APP = new OceanSatelliteDemo();
+  console.log(APP);
 }
 
 main();
