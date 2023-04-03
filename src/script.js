@@ -32,26 +32,26 @@ class OceanSatelliteDemo extends Game {
 
     // gui for camera frustum
     const CameraRollup = this.gui.addFolder('Camera Frustum');
-    CameraRollup.add(this.camera, 'fov', 30, 100).onChange(() =>
-      this.camera.updateProjectionMatrix()
+    CameraRollup.add(this.graphics.camera, 'fov', 30, 100).onChange(() =>
+      this.graphics.camera.updateProjectionMatrix()
     );
-    CameraRollup.add(this.camera, 'near', 0.1, this.camera.far).onChange(() =>
-      this.camera.updateProjectionMatrix()
+    CameraRollup.add(this.graphics.camera, 'near', 0.1, this.graphics.camera.far).onChange(() =>
+      this.graphics.camera.updateProjectionMatrix()
     );
-    CameraRollup.add(this.camera, 'far', 100, 10000).onChange(() =>
-      this.camera.updateProjectionMatrix()
+    CameraRollup.add(this.graphics.camera, 'far', 100, 10000).onChange(() =>
+      this.graphics.camera.updateProjectionMatrix()
     );
     CameraRollup.open();
 
     // add axeshelper
-    this.scene.add(new THREE.AxesHelper(5));
+    this.graphics.scene.add(new THREE.AxesHelper(5));
 
     // add light
     const light = new THREE.AmbientLight(0xffffff);
-    this.scene.add(light);
+    this.graphics.scene.add(light);
 
     // create a control
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    const controls = new OrbitControls(this.graphics.camera, this.graphics.renderer.domElement);
     controls.enableDamping = true;
     controls.target.set(0, 0, 0);
     controls.update();
@@ -86,7 +86,7 @@ class OceanSatelliteDemo extends Game {
 
     // add to scene
     this.combinedMesh = new THREE.Mesh(combinedGeometry, material);
-    this.scene.add(this.combinedMesh);
+    this.graphics.scene.add(this.combinedMesh);
 
     // load satellite model
     // this.loadSatellite();
@@ -125,7 +125,7 @@ class OceanSatelliteDemo extends Game {
         this.satelliteMesh.scale.set(0.005, 0.005, 0.005);
 
         // add to scene
-        this.scene.add(this.satelliteMesh);
+        this.graphics.scene.add(this.satelliteMesh);
       }
     );
   }
@@ -183,7 +183,7 @@ class OceanSatelliteDemo extends Game {
 
         // draw points
         this.chlMesh = new THREE.Points(this.chlGeometry, this.chlMaterial);
-        this.scene.add(this.chlMesh);
+        this.graphics.scene.add(this.chlMesh);
       }
     );
   }
@@ -242,7 +242,7 @@ class OceanSatelliteDemo extends Game {
 
         // draw points
         this.cloudMesh = new THREE.Points(this.cloudGeometry, this.cloudMaterial);
-        this.scene.add(this.cloudMesh);
+        this.graphics.scene.add(this.cloudMesh);
       }
     );
   }
@@ -281,7 +281,7 @@ class OceanSatelliteDemo extends Game {
         for (let i = 0; i < this.coastlineGeometries.length; i++) {
           const mesh = new THREE.Line(this.coastlineGeometries[i], this.coastlineMaterial);
           mesh.frustumCulled = false;
-          this.scene.add(mesh);
+          this.graphics.scene.add(mesh);
           this.coastlineMeshes.push(mesh);
         }
       }
@@ -323,7 +323,7 @@ class OceanSatelliteDemo extends Game {
       './assets/images/space-posz.jpg',
       './assets/images/space-negz.jpg',
     ]);
-    this.scene.background = cubeTexture;
+    this.graphics.scene.background = cubeTexture;
   }
 }
 
