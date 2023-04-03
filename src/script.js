@@ -20,7 +20,7 @@ import cloudFragmentShader from './shaders/cloud/cloud-fragment.glsl';
 import coastlineVertexShader from './shaders/coastline/coastline-vertex.glsl';
 import coastlineFragmentShader from './shaders/coastline/coastline-fragment.glsl';
 
-class Demo extends Game {
+class OceanSatelliteDemo extends Game {
   constructor() {
     // calls the parent class's constructor
     super();
@@ -89,7 +89,7 @@ class Demo extends Game {
     this.scene.add(this.combinedMesh);
 
     // load satellite model
-    this.loadSatellite();
+    // this.loadSatellite();
 
     // load Chlorophyll data and add to scene
     this.loadChlorophyllData();
@@ -111,29 +111,21 @@ class Demo extends Game {
       // onLoad callback function
       (gltf) => {
         // extract mesh from the loaded data
-        const satellite = gltf.scene.children[0];
+        this.satelliteMesh = gltf.scene.children[0];
 
         // align an object to the new axis
         const curAxis = new THREE.Vector3(0, 1, 0); // the original dir of the satellite pointing up
         const newAxis = new THREE.Vector3(-1, 1, -1);
-        satellite.quaternion.setFromUnitVectors(curAxis, newAxis.clone().normalize());
+        this.satelliteMesh.quaternion.setFromUnitVectors(curAxis, newAxis.clone().normalize());
 
         // set the model position
-        satellite.position.set(-1.001, 1.001, -1.001);
+        this.satelliteMesh.position.set(-1.001, 1.001, -1.001);
 
         // scale down the model
-        satellite.scale.set(0.005, 0.005, 0.005);
+        this.satelliteMesh.scale.set(0.005, 0.005, 0.005);
 
         // add to scene
-        this.scene.add(satellite);
-      },
-      // onProgress callback function
-      (progress) => {
-        console.log((progress.loaded / progress.total) * 100 + '% loaded');
-      },
-      // onError callback function
-      (error) => {
-        console.log(error);
+        this.scene.add(this.satelliteMesh);
       }
     );
   }
@@ -192,16 +184,6 @@ class Demo extends Game {
         // draw points
         this.chlMesh = new THREE.Points(this.chlGeometry, this.chlMaterial);
         this.scene.add(this.chlMesh);
-      },
-
-      // onProgress callback
-      (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-      },
-
-      // onError callback
-      (err) => {
-        console.log(err);
       }
     );
   }
@@ -261,16 +243,6 @@ class Demo extends Game {
         // draw points
         this.cloudMesh = new THREE.Points(this.cloudGeometry, this.cloudMaterial);
         this.scene.add(this.cloudMesh);
-      },
-
-      // onProgress callback
-      (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-      },
-
-      // onError callback
-      (err) => {
-        console.log(err);
       }
     );
   }
@@ -358,7 +330,7 @@ class Demo extends Game {
 let APP = null;
 
 function main() {
-  APP = new Demo();
+  APP = new OceanSatelliteDemo();
 }
 
 main();

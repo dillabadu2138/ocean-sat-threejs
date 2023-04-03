@@ -31,8 +31,8 @@ export class Game {
     // call overridden method from child
     this.onInitialize();
 
-    //
-    this.animate();
+    // create a render loop
+    this.rAF();
   }
 
   onWindowResize() {
@@ -41,12 +41,25 @@ export class Game {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  // create a loop that causes the renderer to draw the scene every time the screen is refreshed
-  animate() {
+  rAF() {
     requestAnimationFrame(() => {
-      this.renderer.render(this.scene, this.camera);
-
-      this.animate();
+      this.renderScene();
     });
+  }
+
+  renderScene() {
+    // wait for loading to complete, then start rotating
+    if (this.combinedMesh && this.chlMesh && this.cloudMesh && this.coastlineMeshes) {
+      this.combinedMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
+      this.cloudMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
+      this.chlMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
+      this.coastlineMeshes.forEach((mesh, i) =>
+        mesh.rotateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01)
+      );
+    }
+
+    // render the scene using the camera
+    this.renderer.render(this.scene, this.camera);
+    this.rAF();
   }
 }
