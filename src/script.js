@@ -1,6 +1,5 @@
 import './styles.css';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'dat.gui';
@@ -9,6 +8,7 @@ import * as topojson from 'topojson-client';
 // components
 import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
+import { controls } from './controls.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
@@ -31,7 +31,13 @@ class OceanSatelliteDemo extends Game {
     this.createGUI();
 
     // create controls
-    this.createControls();
+    this.addEntity(
+      'controls',
+      new controls.MyOrbitControls({
+        camera: this.graphics.camera,
+        domElement: this.graphics.renderer.domElement,
+      })
+    );
 
     // add axeshelper
     this.graphics.scene.add(new THREE.AxesHelper(5));
@@ -122,14 +128,6 @@ class OceanSatelliteDemo extends Game {
     cameraRollup
       .add(this.guiParams.camera, 'positionZ', -10, 10)
       .onChange(() => this.guiParams.camera.updateMatrixWorld());
-  }
-
-  createControls() {
-    // create a control
-    this.controls = new OrbitControls(this.graphics.camera, this.graphics.renderer.domElement);
-    this.controls.enableDamping = true;
-    this.controls.target.set(0, 0, 0);
-    this.controls.update();
   }
 
   loadEarth() {
