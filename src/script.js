@@ -36,6 +36,8 @@ class OceanSatelliteDemo extends Game {
       new controls.MyOrbitControls({
         camera: this.graphics.camera,
         domElement: this.graphics.renderer.domElement,
+        gui: this.gui,
+        guiParams: this.guiParams,
       })
     );
 
