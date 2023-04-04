@@ -69,17 +69,59 @@ class OceanSatelliteDemo extends Game {
     };
 
     // add gui for camera frustum
-    const CameraRollup = this.gui.addFolder('Camera Frustum');
-    CameraRollup.add(this.guiParams.camera, 'fov', 30, 100).onChange(() =>
-      this.guiParams.camera.updateProjectionMatrix()
-    );
-    CameraRollup.add(this.guiParams.camera, 'near', 0.1, this.graphics.camera.far).onChange(() =>
-      this.guiParams.camera.updateProjectionMatrix()
-    );
-    CameraRollup.add(this.guiParams.camera, 'far', 100, 10000).onChange(() =>
-      this.guiParams.camera.updateProjectionMatrix()
-    );
-    CameraRollup.open();
+    const cameraRollup = this.gui.addFolder('Camera');
+    cameraRollup
+      .add(this.guiParams.camera, 'fov', 30, 100)
+      .onChange(() => this.guiParams.camera.updateProjectionMatrix());
+    cameraRollup
+      .add(this.guiParams.camera, 'near', 0.1, this.graphics.camera.far)
+      .onChange(() => this.guiParams.camera.updateProjectionMatrix());
+    cameraRollup
+      .add(this.guiParams.camera, 'far', 100, 10000)
+      .onChange(() => this.guiParams.camera.updateProjectionMatrix());
+    cameraRollup.open();
+
+    // define new properties directly on an object create a helper object with getter and setter
+    Object.defineProperties(this.guiParams.camera, {
+      // getter and setter for positionX
+      positionX: {
+        get: function () {
+          return this.position.x;
+        },
+        set: function (value) {
+          this.position.x = value;
+        },
+      },
+      // the getter and setter for positionY
+      positionY: {
+        get: function () {
+          return this.position.y;
+        },
+        set: function (value) {
+          this.position.y = value;
+        },
+      },
+      // the getter and setter for positionZ
+      positionZ: {
+        get: function () {
+          return this.position.z;
+        },
+        set: function (value) {
+          this.position.z = value;
+        },
+      },
+    });
+
+    // add gui for camera position
+    cameraRollup
+      .add(this.guiParams.camera, 'positionX', -10, 10)
+      .onChange(() => this.guiParams.camera.updateMatrixWorld());
+    cameraRollup
+      .add(this.guiParams.camera, 'positionY', -10, 10)
+      .onChange(() => this.guiParams.camera.updateMatrixWorld());
+    cameraRollup
+      .add(this.guiParams.camera, 'positionZ', -10, 10)
+      .onChange(() => this.guiParams.camera.updateMatrixWorld());
   }
 
   createControls() {
