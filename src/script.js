@@ -69,7 +69,7 @@ class OceanSatelliteDemo extends Game {
 
   createGUI() {
     // create dat.gui
-    this.gui = new GUI();
+    this.gui = new GUI({ width: 450 });
 
     // create gui parameters
     this.guiParams = {
@@ -77,15 +77,18 @@ class OceanSatelliteDemo extends Game {
     };
 
     // add gui for camera frustum
-    const cameraRollup = this.gui.addFolder('Camera');
+    const cameraRollup = this.gui.addFolder('카메라(Camera)');
     cameraRollup
       .add(this.guiParams.camera, 'fov', 30, 100)
+      .name('카메라 절두체 수직시야각(fov)')
       .onChange(() => this.guiParams.camera.updateProjectionMatrix());
     cameraRollup
       .add(this.guiParams.camera, 'near', 0.1, this.graphics.camera.far)
+      .name('카메라 절두체 근평면(near)')
       .onChange(() => this.guiParams.camera.updateProjectionMatrix());
     cameraRollup
       .add(this.guiParams.camera, 'far', 100, 10000)
+      .name('카메라 절두체 원평면(far)')
       .onChange(() => this.guiParams.camera.updateProjectionMatrix());
     cameraRollup.open();
 
@@ -123,12 +126,15 @@ class OceanSatelliteDemo extends Game {
     // add gui for camera position
     cameraRollup
       .add(this.guiParams.camera, 'positionX', -10, 10)
+      .name('카메라 X 위치(positionX)')
       .onChange(() => this.guiParams.camera.updateMatrixWorld());
     cameraRollup
       .add(this.guiParams.camera, 'positionY', -10, 10)
+      .name('카메라 Y 위치(positionY)')
       .onChange(() => this.guiParams.camera.updateMatrixWorld());
     cameraRollup
       .add(this.guiParams.camera, 'positionZ', -10, 10)
+      .name('카메라 Z 위치(positionZ)')
       .onChange(() => this.guiParams.camera.updateMatrixWorld());
   }
 
