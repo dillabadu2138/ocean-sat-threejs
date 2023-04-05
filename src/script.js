@@ -9,6 +9,7 @@ import * as topojson from 'topojson-client';
 import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
 import { controls } from './controls.js';
+import { helpers } from './helpers.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
@@ -42,7 +43,14 @@ class OceanSatelliteDemo extends Game {
     );
 
     // add axeshelper
-    this.graphics.scene.add(new THREE.AxesHelper(5));
+    this.addEntity(
+      'axesHelper',
+      new helpers.MyAxesHelper({
+        scene: this.graphics.scene,
+        gui: this.gui,
+        guiParams: this.guiParams,
+      })
+    );
 
     // add light
     const light = new THREE.AmbientLight(0xffffff);
