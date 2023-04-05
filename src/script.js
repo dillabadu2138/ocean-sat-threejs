@@ -70,6 +70,7 @@ class OceanSatelliteDemo extends Game {
   createGUI() {
     // create dat.gui
     this.gui = new GUI({ width: 450 });
+    this.gui.domElement.id = 'gui';
 
     // create gui parameters
     this.guiParams = {
