@@ -11,6 +11,7 @@ import { controls } from './controls.js';
 import { helpers } from './helpers.js';
 import { Coastline } from './coastline.js';
 import { Chlorophyll } from './chlorophyll.js';
+import { Cloud } from './cloud.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
@@ -67,15 +68,20 @@ class OceanSatelliteDemo extends Game {
       })
     );
 
+    // add cloud
+    this.addEntity(
+      'cloud',
+      new Cloud({
+        scene: this.graphics.scene,
+      })
+    );
+
     // add light
     const light = new THREE.AmbientLight(0xffffff);
     this.graphics.scene.add(light);
 
     // load Earth
     this.loadEarth();
-
-    // load cloud data and add to scene
-    this.loadCloudData();
 
     // load space cube texture background and add to scene
     this.loadSpaceCubeTexture();
@@ -209,65 +215,6 @@ class OceanSatelliteDemo extends Game {
 
         // add to scene
         this.graphics.scene.add(this.satelliteMesh);
-      }
-    );
-  }
-
-  loadCloudData() {
-    // load a csv file
-    const loader = new THREE.FileLoader();
-    loader.load(
-      // resource URL
-      'assets/data/cloud/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
-
-      // onLoad callback
-      (data) => {
-        const rows = data.split('\n').slice(1); // skip header row
-
-        // create an instance of instanced buffer geometry
-        this.cloudGeometry = new THREE.InstancedBufferGeometry();
-
-        // preallocate typed arrays
-        const instanceWorldPosition = new Float32Array(rows.length * 2); // xy
-        const instanceCloudColor = new Float32Array(rows.length * 3); // rgb
-
-        // iterate over rows
-        for (let i = 0; i < rows.length; i++) {
-          const values = rows[i].split(','); // lon, lat, val
-
-          // instanced position
-          instanceWorldPosition[i * 2] = values[0]; // lon
-          instanceWorldPosition[i * 2 + 1] = values[1]; // lat
-
-          // instanced cloud rgb
-          instanceCloudColor[i * 3] = values[2];
-          instanceCloudColor[i * 3 + 1] = values[3];
-          instanceCloudColor[i * 3 + 2] = values[4];
-        }
-
-        // set attributes to this geometry
-        this.cloudGeometry.setAttribute(
-          'position',
-          new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
-        );
-        this.cloudGeometry.setAttribute(
-          'instanceWorldPosition',
-          new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
-        );
-        this.cloudGeometry.setAttribute(
-          'instanceCloudColor',
-          new THREE.InstancedBufferAttribute(instanceCloudColor, 3)
-        );
-
-        // create material
-        this.cloudMaterial = new THREE.RawShaderMaterial({
-          vertexShader: cloudVertexShader,
-          fragmentShader: cloudFragmentShader,
-        });
-
-        // draw points
-        this.cloudMesh = new THREE.Points(this.cloudGeometry, this.cloudMaterial);
-        this.graphics.scene.add(this.cloudMesh);
       }
     );
   }
