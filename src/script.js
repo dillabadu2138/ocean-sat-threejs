@@ -73,6 +73,8 @@ class OceanSatelliteDemo extends Game {
       'cloud',
       new Cloud({
         scene: this.graphics.scene,
+        gui: this.gui,
+        guiParams: this.guiParams,
       })
     );
 

@@ -18,6 +18,28 @@ export class Cloud {
     this.loadCloudData(params);
   }
 
+  initGUI() {
+    // create gui parameters for cloud
+    this.params.guiParams.cloud = this.cloudMesh;
+
+    // add gui for cloud
+    const cloudRollup = this.params.gui.addFolder('구름 영상(cloud)');
+    cloudRollup.open();
+
+    // control visibility
+    cloudRollup.add(this.params.guiParams.cloud, 'visible').name('구름 영상 활성화(visible)');
+
+    // control opacity
+    cloudRollup
+      .add(this.params.guiParams.cloud.material.uniforms.uOpacity, 'value', 0, 1)
+      .step(0.01)
+      .name('구름 영상 투명도(opacity)')
+      .onChange((value) => {
+        this.cloudMesh.material.transparent = true;
+        this.cloudMesh.material.uniforms.uOpacity.value = value;
+      });
+  }
+
   loadCloudData(params) {
     // load a csv file
     const loader = new THREE.FileLoader();
@@ -66,6 +88,11 @@ export class Cloud {
 
         // create material
         const cloudMaterial = new THREE.RawShaderMaterial({
+          uniforms: {
+            uOpacity: {
+              value: 1.0,
+            },
+          },
           vertexShader: cloudVertexShader,
           fragmentShader: cloudFragmentShader,
         });
@@ -73,6 +100,9 @@ export class Cloud {
         // draw points
         this.cloudMesh = new THREE.Points(cloudGeometry, cloudMaterial);
         params.scene.add(this.cloudMesh);
+
+        // add dat.gui
+        this.initGUI();
       }
     );
   }
