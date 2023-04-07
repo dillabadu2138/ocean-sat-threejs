@@ -2,9 +2,13 @@
 
 precision highp float;
 
+// uniforms
+uniform vec3 uPointColor;
+uniform float uOpacity;
+
 // we need to declare an output for the fragment shader
 out vec4 fragColor;
 
 void main() {
-  fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  fragColor = vec4(uPointColor.rgb/255.0, uOpacity);
 }

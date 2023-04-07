@@ -18,6 +18,36 @@ export class Chlorophyll {
     this.loadChlorophyllData(params);
   }
 
+  initGUI() {
+    // create gui parameters for chlorophyll
+    this.params.guiParams.chlorophyll = this.chlMesh;
+
+    // add gui for coastline
+    const chlRollup = this.params.gui.addFolder('클로로필(chlorophyll)');
+    chlRollup.open();
+
+    // control visibility
+    chlRollup.add(this.params.guiParams.chlorophyll, 'visible').name('클로로필 활성화(visible)');
+
+    // control opacity
+    chlRollup
+      .add(this.params.guiParams.chlorophyll.material.uniforms.uOpacity, 'value', 0, 1)
+      .step(0.01)
+      .name('클로로필 투명도(opacity)')
+      .onChange((value) => {
+        this.chlMesh.material.transparent = true;
+        this.chlMesh.material.uniforms.uOpacity.value = value;
+      });
+
+    // control color picking
+    chlRollup
+      .addColor(this.params.guiParams.chlorophyll.material.uniforms.uPointColor, 'value')
+      .name('클로로필 색상(color)')
+      .onChange((value) => {
+        this.chlMesh.material.uniforms.uPointColor.value = value;
+      });
+  }
+
   loadChlorophyllData(params) {
     // load a csv file
     const loader = new THREE.FileLoader();
@@ -62,6 +92,14 @@ export class Chlorophyll {
 
         // create material
         const chlMaterial = new THREE.RawShaderMaterial({
+          uniforms: {
+            uPointColor: {
+              value: [0, 255, 0],
+            },
+            uOpacity: {
+              value: 1.0,
+            },
+          },
           vertexShader: chlorophyllVertexShader,
           fragmentShader: chlorophyllFragmentShader,
         });
@@ -69,6 +107,9 @@ export class Chlorophyll {
         // draw points
         this.chlMesh = new THREE.Points(chlGeometry, chlMaterial);
         params.scene.add(this.chlMesh);
+
+        // add dat.gui
+        this.initGUI();
       }
     );
   }

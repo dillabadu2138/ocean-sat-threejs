@@ -16,8 +16,6 @@ import { Cloud } from './cloud.js';
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
 import colormapFragmentShader from './shaders/colormap/colormap-fragment.glsl';
-import cloudVertexShader from './shaders/cloud/cloud-vertex.glsl';
-import cloudFragmentShader from './shaders/cloud/cloud-fragment.glsl';
 
 class OceanSatelliteDemo extends Game {
   constructor() {
@@ -65,6 +63,8 @@ class OceanSatelliteDemo extends Game {
       'chlorophyll',
       new Chlorophyll({
         scene: this.graphics.scene,
+        gui: this.gui,
+        guiParams: this.guiParams,
       })
     );
 
