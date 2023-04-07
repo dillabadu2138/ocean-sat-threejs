@@ -10,12 +10,11 @@ import { CubeSphere } from './cubeSphere.js';
 import { controls } from './controls.js';
 import { helpers } from './helpers.js';
 import { Coastline } from './coastline.js';
+import { Chlorophyll } from './chlorophyll.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
 import colormapFragmentShader from './shaders/colormap/colormap-fragment.glsl';
-import chlorophyllVertexShader from './shaders/chlorophyll/chlorophyll-vertex.glsl';
-import chlorophyllFragmentShader from './shaders/chlorophyll/chlorophyll-fragment.glsl';
 import cloudVertexShader from './shaders/cloud/cloud-vertex.glsl';
 import cloudFragmentShader from './shaders/cloud/cloud-fragment.glsl';
 
@@ -60,18 +59,20 @@ class OceanSatelliteDemo extends Game {
       })
     );
 
+    // add chlorophyll
+    this.addEntity(
+      'chlorophyll',
+      new Chlorophyll({
+        scene: this.graphics.scene,
+      })
+    );
+
     // add light
     const light = new THREE.AmbientLight(0xffffff);
     this.graphics.scene.add(light);
 
     // load Earth
     this.loadEarth();
-
-    // load satellite model
-    // this.loadSatellite();
-
-    // load Chlorophyll data and add to scene
-    this.loadChlorophyllData();
 
     // load cloud data and add to scene
     this.loadCloudData();
@@ -208,64 +209,6 @@ class OceanSatelliteDemo extends Game {
 
         // add to scene
         this.graphics.scene.add(this.satelliteMesh);
-      }
-    );
-  }
-
-  loadChlorophyllData() {
-    // load a csv file
-    const loader = new THREE.FileLoader();
-    loader.load(
-      // resource URL
-      'assets/data/Chlorophyll/Chl_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
-
-      // onLoad callback
-      (data) => {
-        const rows = data.split('\n').slice(1); // skip header row
-
-        // create an instance of instanced buffer geometry
-        this.chlGeometry = new THREE.InstancedBufferGeometry();
-        //this.chlGeometry.maxInstancedCount = rows.length;
-
-        // preallocate typed arrays
-        const instanceWorldPosition = new Float32Array(rows.length * 2); // xy
-        const instanceChl = new Float32Array(rows.length);
-
-        // iterate over rows
-        for (let i = 0; i < rows.length; i++) {
-          const values = rows[i].split(','); // lon, lat, val
-
-          // instanced position
-          instanceWorldPosition[i * 2] = values[0]; // lon
-          instanceWorldPosition[i * 2 + 1] = values[1]; // lat
-
-          // instanced chlorophyll
-          instanceChl[i] = values[2];
-        }
-
-        // set attributes to this geometry
-        this.chlGeometry.setAttribute(
-          'position',
-          new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
-        );
-        this.chlGeometry.setAttribute(
-          'instanceWorldPosition',
-          new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
-        );
-        this.chlGeometry.setAttribute(
-          'instanceChl',
-          new THREE.InstancedBufferAttribute(instanceChl, 1)
-        );
-
-        // create material
-        this.chlMaterial = new THREE.RawShaderMaterial({
-          vertexShader: chlorophyllVertexShader,
-          fragmentShader: chlorophyllFragmentShader,
-        });
-
-        // draw points
-        this.chlMesh = new THREE.Points(this.chlGeometry, this.chlMaterial);
-        this.graphics.scene.add(this.chlMesh);
       }
     );
   }
