@@ -20,6 +20,38 @@ export class Coastline {
     this.loadCoastline(params);
   }
 
+  initGUI() {
+    // create gui parameters for coastline
+    this.params.guiParams.coastline = this;
+
+    // add gui for coastline
+    const coastlineRollup = this.params.gui.addFolder('해안선(coastline)');
+    coastlineRollup.open();
+
+    // control visibility
+    coastlineRollup
+      .add(this.params.guiParams.coastline.mesh, 'visible')
+      .name('해안선 활성화(visible)');
+
+    // control opacity
+    coastlineRollup
+      .add(this.params.guiParams.coastline.material.uniforms.uOpacity, 'value', 0, 1)
+      .step(0.01)
+      .name('해안선 투명도(opacity)')
+      .onChange((value) => {
+        this.material.transparent = true;
+        this.material.uniforms.uOpacity.value = value;
+      });
+
+    // control color picking
+    coastlineRollup
+      .addColor(this.params.guiParams.coastline.material.uniforms.uLineColor, 'value')
+      .name('해안선 색상(color)')
+      .onChange((value) => {
+        this.material.uniforms.uLineColor.value = value;
+      });
+  }
+
   loadCoastline(params) {
     // load a topojson file
     const loader = new THREE.FileLoader();
@@ -42,7 +74,10 @@ export class Coastline {
         this.material = new THREE.RawShaderMaterial({
           uniforms: {
             uLineColor: {
-              value: new Float32Array([1.0, 1.0, 1.0]),
+              value: [255, 255, 255],
+            },
+            uOpacity: {
+              value: 1.0,
             },
           },
           vertexShader: coastlineVertexShader,
@@ -54,8 +89,10 @@ export class Coastline {
 
         // add to scene
         this.mesh = new THREE.Line(this.geometry, this.material);
-        this.mesh.frustumCulled = false;
         params.scene.add(this.mesh);
+
+        // add dat.gui
+        this.initGUI();
       }
     );
   }
