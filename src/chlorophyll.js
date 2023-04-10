@@ -48,6 +48,14 @@ export class Chlorophyll {
     chlRollup
       .add(this.params.guiParams.chlorophyll.material.uniforms.uColorRangeMax, 'value', 1, 5)
       .name('클로로필 범위 최댓값(color)');
+
+    // control point size
+    chlRollup
+      .add(this.params.guiParams.chlorophyll.material.uniforms.uPointSize, 'value')
+      .min(1)
+      .max(4)
+      .step(0.01)
+      .name('클로로필 점 크기(pointSize');
   }
 
   loadChlorophyllData(params) {
@@ -108,6 +116,9 @@ export class Chlorophyll {
             },
             uColorRangeMax: {
               value: 2,
+            },
+            uPointSize: {
+              value: 1,
             },
           },
           vertexShader: chlorophyllVertexShader,

@@ -5,6 +5,7 @@ precision highp float;
 // uniforms
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
+uniform float uPointSize;
 
 // attributes
 in vec3 position;
@@ -32,7 +33,7 @@ void main(){
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 
-  gl_PointSize = 1.0;
+  gl_PointSize = uPointSize;
 
   vChlorophyll = instanceChl;
 }
