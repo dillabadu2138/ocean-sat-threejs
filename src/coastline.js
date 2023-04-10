@@ -22,20 +22,18 @@ export class Coastline {
 
   initGUI() {
     // create gui parameters for coastline
-    this.params.guiParams.coastline = this;
+    this.params.guiParams.coastline = this.material;
 
     // add gui for coastline
     const coastlineRollup = this.params.gui.addFolder('해안선(coastline)');
     coastlineRollup.open();
 
     // control visibility
-    coastlineRollup
-      .add(this.params.guiParams.coastline.mesh, 'visible')
-      .name('해안선 활성화(visible)');
+    coastlineRollup.add(this.params.guiParams.coastline, 'visible').name('해안선 활성화(visible)');
 
     // control opacity
     coastlineRollup
-      .add(this.params.guiParams.coastline.material.uniforms.uOpacity, 'value', 0, 1)
+      .add(this.params.guiParams.coastline.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
       .name('해안선 투명도(opacity)')
       .onChange((value) => {
@@ -45,7 +43,7 @@ export class Coastline {
 
     // control color picking
     coastlineRollup
-      .addColor(this.params.guiParams.coastline.material.uniforms.uLineColor, 'value')
+      .addColor(this.params.guiParams.coastline.uniforms.uLineColor, 'value')
       .name('해안선 색상(color)')
       .onChange((value) => {
         this.material.uniforms.uLineColor.value = value;
@@ -84,12 +82,14 @@ export class Coastline {
           fragmentShader: coastlineFragmentShader,
         });
 
-        // combine all geometries into one geometry
-        this.geometry = BufferGeometryUtils.mergeBufferGeometries([...geometries]);
-
-        // add to scene
-        this.mesh = new THREE.Line(this.geometry, this.material);
-        params.scene.add(this.mesh);
+        // iterate over geometries
+        this.meshes = [];
+        for (let i = 0; i < geometries.length; i++) {
+          const mesh = new THREE.Line(geometries[i], this.material);
+          mesh.frustumCulled = false;
+          params.scene.add(mesh);
+          this.meshes.push(mesh);
+        }
 
         // add dat.gui
         this.initGUI();
