@@ -38,6 +38,14 @@ export class Cloud {
         this.cloudMesh.material.transparent = true;
         this.cloudMesh.material.uniforms.uOpacity.value = value;
       });
+
+    // control point size
+    cloudRollup
+      .add(this.params.guiParams.cloud.material.uniforms.uPointSize, 'value')
+      .min(1)
+      .max(4)
+      .step(0.01)
+      .name('구름 영상 점 크기(pointSize');
   }
 
   loadCloudData(params) {
@@ -91,6 +99,9 @@ export class Cloud {
           uniforms: {
             uOpacity: {
               value: 1.0,
+            },
+            uPointSize: {
+              value: 1,
             },
           },
           vertexShader: cloudVertexShader,
