@@ -53,7 +53,7 @@ export class Chlorophyll {
     const loader = new THREE.FileLoader();
     loader.load(
       // resource URL
-      'assets/data/chlorophyll/Chl_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
+      'assets/data/Chl_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
 
       // onLoad callback
       (data) => {

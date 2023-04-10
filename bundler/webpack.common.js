@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname, '../src/script.js'),
@@ -14,6 +15,25 @@ module.exports = {
       minify: true,
     }),
     new MiniCSSExtractPlugin(),
+    new CopyPlugin({
+      patterns: [
+        // data
+        {
+          from: path.resolve(__dirname, '../src/assets/data'),
+          to: path.resolve(__dirname, '../dist/assets/data'),
+        },
+        // images
+        {
+          from: path.resolve(__dirname, '../src/assets/images'),
+          to: path.resolve(__dirname, '../dist/assets/images'),
+        },
+        // models
+        {
+          from: path.resolve(__dirname, '../src/assets/models'),
+          to: path.resolve(__dirname, '../dist/assets/models'),
+        },
+      ],
+    }),
   ],
   module: {
     rules: [

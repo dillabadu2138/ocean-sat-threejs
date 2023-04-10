@@ -57,7 +57,7 @@ export class Coastline {
     const loader = new THREE.FileLoader();
     loader.load(
       // resource URL
-      'assets/data/coastline/earth-topo.json',
+      'assets/data/earth-topo.json',
 
       // onLoad callback
       (data) => {

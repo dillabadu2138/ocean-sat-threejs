@@ -45,7 +45,7 @@ export class Cloud {
     const loader = new THREE.FileLoader();
     loader.load(
       // resource URL
-      'assets/data/cloud/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
+      'assets/data/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
 
       // onLoad callback
       (data) => {
