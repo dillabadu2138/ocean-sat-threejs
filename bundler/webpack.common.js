@@ -32,6 +32,11 @@ module.exports = {
           from: path.resolve(__dirname, '../src/assets/models'),
           to: path.resolve(__dirname, '../dist/assets/models'),
         },
+        // lut
+        {
+          from: path.resolve(__dirname, '../src/assets/lut'),
+          to: path.resolve(__dirname, '../dist/assets/lut'),
+        },
       ],
     }),
   ],

@@ -39,13 +39,15 @@ export class Chlorophyll {
         this.chlMesh.material.uniforms.uOpacity.value = value;
       });
 
-    // control color picking
+    // control colorRange minimum
     chlRollup
-      .addColor(this.params.guiParams.chlorophyll.material.uniforms.uPointColor, 'value')
-      .name('클로로필 색상(color)')
-      .onChange((value) => {
-        this.chlMesh.material.uniforms.uPointColor.value = value;
-      });
+      .add(this.params.guiParams.chlorophyll.material.uniforms.uColorRangeMin, 'value', 0, 1)
+      .name('클로로필 범위 최솟값(color)');
+
+    // control colorRange maximum
+    chlRollup
+      .add(this.params.guiParams.chlorophyll.material.uniforms.uColorRangeMax, 'value', 1, 5)
+      .name('클로로필 범위 최댓값(color)');
   }
 
   loadChlorophyllData(params) {
@@ -90,14 +92,22 @@ export class Chlorophyll {
         );
         chlGeometry.setAttribute('instanceChl', new THREE.InstancedBufferAttribute(instanceChl, 1));
 
+        const lutTexture = new THREE.TextureLoader().load('assets/lut/Turbo.png');
+
         // create material
         const chlMaterial = new THREE.RawShaderMaterial({
           uniforms: {
-            uPointColor: {
-              value: [0, 255, 0],
-            },
             uOpacity: {
               value: 1.0,
+            },
+            uLutTexture: {
+              value: lutTexture,
+            },
+            uColorRangeMin: {
+              value: 0,
+            },
+            uColorRangeMax: {
+              value: 2,
             },
           },
           vertexShader: chlorophyllVertexShader,

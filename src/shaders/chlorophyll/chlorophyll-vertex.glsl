@@ -9,6 +9,10 @@ uniform mat4 projectionMatrix;
 // attributes
 in vec3 position;
 in vec2 instanceWorldPosition; // x y translation offsets for an instance
+in float instanceChl;
+
+// varyings
+out float vChlorophyll;
 
 // calculate point on unit sphere given longitude and latitude
 vec3 convertCoordinateToPoint(vec2 coord){
@@ -29,4 +33,6 @@ void main(){
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 
   gl_PointSize = 1.0;
+
+  vChlorophyll = instanceChl;
 }
