@@ -1,0 +1,14 @@
+# pull the official Node docker image
+FROM node:16-alpine
+
+# set a working directory
+WORKDIR /client
+
+# copy package dependencies to container
+COPY package*.json /client
+
+# install dependencies
+RUN npm install
+
+# copy remaining codes
+COPY . /client
