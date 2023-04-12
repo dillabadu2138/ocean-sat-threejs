@@ -26,7 +26,7 @@ export class Coastline {
 
     // add gui for coastline
     const coastlineRollup = this.params.gui.addFolder('해안선(coastline)');
-    coastlineRollup.open();
+    coastlineRollup.close();
 
     // control visibility
     coastlineRollup.add(this.params.guiParams.coastline, 'visible').name('해안선 활성화(visible)');

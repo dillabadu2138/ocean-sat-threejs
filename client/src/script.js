@@ -12,6 +12,7 @@ import { helpers } from './helpers.js';
 import { Coastline } from './coastline.js';
 import { Chlorophyll } from './chlorophyll.js';
 import { Cloud } from './cloud.js';
+import { Tss } from './tss.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
@@ -78,6 +79,16 @@ class OceanSatelliteDemo extends Game {
       })
     );
 
+    // add tss
+    this.addEntity(
+      'tss',
+      new Tss({
+        scene: this.graphics.scene,
+        gui: this.gui,
+        guiParams: this.guiParams,
+      })
+    );
+
     // add light
     const light = new THREE.AmbientLight(0xffffff);
     this.graphics.scene.add(light);
@@ -113,7 +124,7 @@ class OceanSatelliteDemo extends Game {
       .add(this.guiParams.camera, 'far', 100, 10000)
       .name('카메라 절두체 원평면(far)')
       .onChange(() => this.guiParams.camera.updateProjectionMatrix());
-    cameraRollup.open();
+    cameraRollup.close();
 
     // define new properties directly on an object create a helper object with getter and setter
     Object.defineProperties(this.guiParams.camera, {

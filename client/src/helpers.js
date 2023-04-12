@@ -26,7 +26,7 @@ export const helpers = (function () {
       helpersRollup
         .add(this.params.guiParams.axesHelper, 'visible')
         .name('축 도우미 보기(showAxesHelper)');
-      helpersRollup.open();
+      helpersRollup.close();
     }
   }
 

@@ -57,7 +57,7 @@ export const controls = (function () {
         .add(this.params.guiParams.controls, 'zoomSpeed', 0.1, 1)
         .name('줌 속도(zoomSpeed)')
         .onChange(() => this.controls.update());
-      controlsRollup.open();
+      controlsRollup.close();
     }
   }
 
