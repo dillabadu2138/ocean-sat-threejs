@@ -13,6 +13,7 @@ import { Coastline } from './coastline.js';
 import { Chlorophyll } from './chlorophyll.js';
 import { Cloud } from './cloud.js';
 import { Tss } from './tss.js';
+import { Aod } from './aod.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
@@ -83,6 +84,16 @@ class OceanSatelliteDemo extends Game {
     this.addEntity(
       'tss',
       new Tss({
+        scene: this.graphics.scene,
+        gui: this.gui,
+        guiParams: this.guiParams,
+      })
+    );
+
+    // add aod
+    this.addEntity(
+      'aod',
+      new Aod({
         scene: this.graphics.scene,
         gui: this.gui,
         guiParams: this.guiParams,
