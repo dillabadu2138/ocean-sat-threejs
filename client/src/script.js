@@ -14,6 +14,7 @@ import { Chlorophyll } from './chlorophyll.js';
 import { Cloud } from './cloud.js';
 import { Tss } from './tss.js';
 import { Aod } from './aod.js';
+import { Ssc } from './ssc.js';
 
 // shaders
 import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
@@ -94,6 +95,16 @@ class OceanSatelliteDemo extends Game {
     this.addEntity(
       'aod',
       new Aod({
+        scene: this.graphics.scene,
+        gui: this.gui,
+        guiParams: this.guiParams,
+      })
+    );
+
+    // add ssc
+    this.addEntity(
+      'ssc',
+      new Ssc({
         scene: this.graphics.scene,
         gui: this.gui,
         guiParams: this.guiParams,
