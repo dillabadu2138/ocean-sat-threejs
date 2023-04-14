@@ -14,8 +14,21 @@ export class Cloud {
   }
 
   initialize(params) {
-    // load cloud and add to scene
-    this.loadCloudData(params);
+    // set initial state
+    this.initialState = {
+      geometry: { url: 'assets/data/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv' },
+      material: {
+        uniforms: {
+          uOpacity: { value: 1.0 },
+          uPointSize: { value: 1 },
+        },
+        vertexShader: cloudVertexShader,
+        fragmentShader: cloudFragmentShader,
+      },
+    };
+
+    // create mesh and add to scene
+    this.createMesh(this.initialState);
   }
 
   initGUI() {
@@ -48,73 +61,79 @@ export class Cloud {
       .name('구름 영상 점 크기(pointSize');
   }
 
-  loadCloudData(params) {
-    // load a csv file
-    const loader = new THREE.FileLoader();
-    loader.load(
-      // resource URL
-      'assets/data/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
+  createMesh(state) {
+    const promises = [this.createGeometry(state.geometry), this.createMaterial(state.material)];
 
-      // onLoad callback
-      (data) => {
-        const rows = data.split('\n').slice(1); // skip header row
+    return Promise.all(promises).then((result) => {
+      // draw points
+      this.cloudMesh = new THREE.Points(result[0], result[1]);
+      this.params.scene.add(this.cloudMesh);
 
-        // create an instance of instanced buffer geometry
-        const cloudGeometry = new THREE.InstancedBufferGeometry();
+      // add dat.gui
+      this.initGUI();
+    });
+  }
 
-        // preallocate typed arrays
-        const instanceWorldPosition = new Float32Array(rows.length * 2); // xy
-        const instanceCloudColor = new Float32Array(rows.length * 3); // rgb
+  createGeometry(geometry) {
+    const promise = this.loadFile(geometry.url);
 
-        // iterate over rows
-        for (let i = 0; i < rows.length; i++) {
-          const values = rows[i].split(','); // lon, lat, val
+    return promise.then((data) => {
+      // skip header row
+      const rows = data.split('\n').slice(1);
 
-          // instanced position
-          instanceWorldPosition[i * 2] = values[0]; // lon
-          instanceWorldPosition[i * 2 + 1] = values[1]; // lat
+      // create an instance of instanced buffer geometry
+      const instancedBuffergeometry = new THREE.InstancedBufferGeometry();
 
-          // instanced cloud rgb
-          instanceCloudColor[i * 3] = values[2];
-          instanceCloudColor[i * 3 + 1] = values[3];
-          instanceCloudColor[i * 3 + 2] = values[4];
-        }
+      // preallocate typed arrays
+      const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
+      const instanceCloudColor = new Float32Array(rows.length * 3); // rgb
 
-        // set attributes to this geometry
-        cloudGeometry.setAttribute(
-          'position',
-          new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
-        );
-        cloudGeometry.setAttribute(
-          'instanceWorldPosition',
-          new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
-        );
-        cloudGeometry.setAttribute(
-          'instanceCloudColor',
-          new THREE.InstancedBufferAttribute(instanceCloudColor, 3)
-        );
+      // iterate over rows
+      for (let i = 0; i < rows.length; i++) {
+        const values = rows[i].split(','); // lon, lat, val
 
-        // create material
-        const cloudMaterial = new THREE.RawShaderMaterial({
-          uniforms: {
-            uOpacity: {
-              value: 1.0,
-            },
-            uPointSize: {
-              value: 1,
-            },
-          },
-          vertexShader: cloudVertexShader,
-          fragmentShader: cloudFragmentShader,
-        });
+        // instanced position
+        instanceWorldPosition[i * 2] = values[0]; // lon
+        instanceWorldPosition[i * 2 + 1] = values[1]; // lat
 
-        // draw points
-        this.cloudMesh = new THREE.Points(cloudGeometry, cloudMaterial);
-        params.scene.add(this.cloudMesh);
-
-        // add dat.gui
-        this.initGUI();
+        // instanced cloud rgb
+        instanceCloudColor[i * 3] = values[2];
+        instanceCloudColor[i * 3 + 1] = values[3];
+        instanceCloudColor[i * 3 + 2] = values[4];
       }
-    );
+
+      // set attributes to this geometry
+      instancedBuffergeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
+      );
+      instancedBuffergeometry.setAttribute(
+        'instanceWorldPosition',
+        new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
+      );
+      instancedBuffergeometry.setAttribute(
+        'instanceCloudColor',
+        new THREE.InstancedBufferAttribute(instanceCloudColor, 3)
+      );
+
+      return instancedBuffergeometry;
+    });
+  }
+
+  createMaterial(material) {
+    return new Promise((resolve) => {
+      // create raw shader material
+      const rawShaderMaterial = new THREE.RawShaderMaterial({
+        ...material,
+      });
+
+      resolve(rawShaderMaterial);
+    });
+  }
+
+  loadFile(url) {
+    return new Promise((resolve) => {
+      new THREE.FileLoader().load(url, resolve);
+    });
   }
 }

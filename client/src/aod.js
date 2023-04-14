@@ -14,8 +14,25 @@ export class Aod {
   }
 
   initialize(params) {
-    // load aod and add to scene
-    this.loadAodData(params);
+    // set initial state
+    this.initialState = {
+      geometry: { url: 'assets/data/AOD_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv' },
+      material: {
+        url: 'assets/lut/Cool.png',
+        uniforms: {
+          uOpacity: { value: 1.0 },
+          uLutTexture: { value: null },
+          uColorRangeMin: { value: 0 },
+          uColorRangeMax: { value: 2 },
+          uPointSize: { value: 1 },
+        },
+        vertexShader: aodVertexShader,
+        fragmentShader: aodFragmentShader,
+      },
+    };
+
+    // create mesh and add to scene
+    this.createMesh(this.initialState);
   }
 
   initGUI() {
@@ -58,80 +75,101 @@ export class Aod {
       .name('AOD 점 크기');
   }
 
-  loadAodData(params) {
-    // load a csv file
-    const loader = new THREE.FileLoader();
-    loader.load(
-      // resource URL
-      'assets/data/AOD_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv',
+  createMesh(state) {
+    const promises = [this.createGeometry(state.geometry), this.createMaterial(state.material)];
 
-      // onLoad callback
-      (data) => {
-        // skip header row
-        const rows = data.split('\n').slice(1);
+    return Promise.all(promises).then((result) => {
+      // draw points
+      this.aodMesh = new THREE.Points(result[0], result[1]);
+      this.params.scene.add(this.aodMesh);
 
-        // create an instance of instanced buffer geometry
-        const aodGeometry = new THREE.InstancedBufferGeometry();
+      // add dat.gui
+      this.initGUI();
+    });
+  }
 
-        // preallocate typed arrays
-        const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
-        const instanceAod = new Float32Array(rows.length); // val
+  createGeometry(geometry) {
+    const promise = this.loadFile(geometry.url);
 
-        // iterate over rows
-        for (let i = 0; i < rows.length; i++) {
-          const values = rows[i].split(','); // lon, lat, val
+    return promise.then((data) => {
+      // skip header row
+      const rows = data.split('\n').slice(1);
 
-          // instanced position
-          instanceWorldPosition[i * 2] = values[0]; // lon
-          instanceWorldPosition[i * 2 + 1] = values[1]; // lat
+      // create an instance of instanced buffer geometry
+      const instancedBuffergeometry = new THREE.InstancedBufferGeometry();
 
-          // instanced aod
-          instanceAod[i] = values[2];
-        }
+      // preallocate typed arrays
+      const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
+      const instanceAod = new Float32Array(rows.length); // val
 
-        // set attributes to this geometry
-        aodGeometry.setAttribute(
-          'position',
-          new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
-        );
-        aodGeometry.setAttribute(
-          'instanceWorldPosition',
-          new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
-        );
-        aodGeometry.setAttribute('instanceAod', new THREE.InstancedBufferAttribute(instanceAod, 1));
+      // iterate over rows
+      for (let i = 0; i < rows.length; i++) {
+        const values = rows[i].split(','); // lon, lat, val
 
-        const lutTexture = new THREE.TextureLoader().load('assets/lut/Cool.png');
+        // instanced position
+        instanceWorldPosition[i * 2] = values[0]; // lon
+        instanceWorldPosition[i * 2 + 1] = values[1]; // lat
 
-        // create material
-        const aodMaterial = new THREE.RawShaderMaterial({
-          uniforms: {
-            uOpacity: {
-              value: 1.0,
-            },
-            uLutTexture: {
-              value: lutTexture,
-            },
-            uColorRangeMin: {
-              value: 0,
-            },
-            uColorRangeMax: {
-              value: 2,
-            },
-            uPointSize: {
-              value: 1,
-            },
-          },
-          vertexShader: aodVertexShader,
-          fragmentShader: aodFragmentShader,
-        });
-
-        // draw points
-        this.aodMesh = new THREE.Points(aodGeometry, aodMaterial);
-        params.scene.add(this.aodMesh);
-
-        // add dat.gui
-        this.initGUI();
+        // instanced aod
+        instanceAod[i] = values[2];
       }
-    );
+
+      // set attributes to this geometry
+      instancedBuffergeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
+      );
+      instancedBuffergeometry.setAttribute(
+        'instanceWorldPosition',
+        new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
+      );
+      instancedBuffergeometry.setAttribute(
+        'instanceAod',
+        new THREE.InstancedBufferAttribute(instanceAod, 1)
+      );
+
+      return instancedBuffergeometry;
+    });
+  }
+
+  createMaterial(material) {
+    const promise = this.loadTexture(material.url);
+
+    return promise.then((texture) => {
+      // create uniforms properties
+      const uniformsProperties = {};
+      Object.keys(material.uniforms).map((key) => {
+        // copy and update value
+        if (key === 'uLutTexture') {
+          uniformsProperties[key] = { ...material.uniforms[key], value: texture };
+        } else {
+          // just copy the value otherwise
+          uniformsProperties[key] = material.uniforms[key];
+        }
+      });
+
+      // create raw shader material
+      const rawShaderMaterial = new THREE.RawShaderMaterial({
+        uniforms: {
+          ...uniformsProperties,
+        },
+        vertexShader: material.vertexShader,
+        fragmentShader: material.fragmentShader,
+      });
+
+      return rawShaderMaterial;
+    });
+  }
+
+  loadFile(url) {
+    return new Promise((resolve) => {
+      new THREE.FileLoader().load(url, resolve);
+    });
+  }
+
+  loadTexture(url) {
+    return new Promise((resolve) => {
+      new THREE.TextureLoader().load(url, resolve);
+    });
   }
 }
