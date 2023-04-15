@@ -2,7 +2,7 @@ import './styles.css';
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { GUI } from 'dat.gui';
+import { GUI } from 'lil-gui';
 
 // components
 import { Game } from './game.js';

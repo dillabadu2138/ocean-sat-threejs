@@ -13,6 +13,8 @@ export const controls = (function () {
     initialize(params) {
       this.controls = new OrbitControls(params.camera, params.domElement);
       this.controls.enableDamping = true;
+      this.controls.rotateSpeed = 0.5;
+      this.controls.zoomSpeed = 0.5;
       this.controls.target.set(0, 0, 0);
       this.controls.update();
 

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import * as topojson from 'topojson-client';
 
 // shader
@@ -43,7 +42,7 @@ export class Coastline {
 
     // control color picking
     coastlineRollup
-      .addColor(this.params.guiParams.coastline.uniforms.uLineColor, 'value')
+      .addColor(this.params.guiParams.coastline.uniforms.uLineColor, 'value', 255)
       .name('해안선 색상(color)')
       .onChange((value) => {
         this.material.uniforms.uLineColor.value = value;

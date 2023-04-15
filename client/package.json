@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "gl-matrix": "^3.4.3",
+    "lil-gui": "^0.18.1",
     "three": "^0.150.1",
     "topojson-client": "^3.1.0"
   },
@@ -20,7 +21,6 @@
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
-    "dat.gui": "^0.7.9",
     "file-loader": "^6.2.0",
     "glslify-loader": "^2.0.0",
     "html-loader": "^4.2.0",
