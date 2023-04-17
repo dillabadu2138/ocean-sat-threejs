@@ -26,6 +26,18 @@ export class Graphics {
 
     // create a scene
     this.scene = new THREE.Scene();
+
+    // initialize the loading manager to handle all loading events
+    this.loadingManager = new THREE.LoadingManager();
+    this.loadingManager.onLoad = function () {
+      console.log('Loading complete!');
+    };
+    this.loadingManager.onProgress = function (url, loaded, total) {
+      console.log(`loading file: ${url}\nLoaded ${loaded} of ${total} files`);
+    };
+    this.loadingManager.onError = function (url) {
+      console.log(`There was an error loading ${url}`);
+    };
   }
 
   onWindowResize() {

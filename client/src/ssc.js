@@ -62,8 +62,8 @@ export class Ssc {
 
   loadSscData(params) {
     // loaders
-    const fileLoader = new THREE.FileLoader();
-    const textureLoader = new THREE.TextureLoader();
+    const fileLoader = new THREE.FileLoader(this.params.loadingManager);
+    const textureLoader = new THREE.TextureLoader(this.params.loadingManager);
 
     // promises
     const promiseSpd = new Promise((resolve, reject) => {

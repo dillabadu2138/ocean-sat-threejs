@@ -133,7 +133,7 @@ export class Cloud {
 
   loadFile(url) {
     return new Promise((resolve) => {
-      new THREE.FileLoader().load(url, resolve);
+      new THREE.FileLoader(this.params.loadingManager).load(url, resolve);
     });
   }
 }

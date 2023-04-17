@@ -56,6 +56,7 @@ class OceanSatelliteDemo extends Game {
       'coastline',
       new Coastline({
         scene: this.graphics.scene,
+        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -66,6 +67,7 @@ class OceanSatelliteDemo extends Game {
       'chlorophyll',
       new Chlorophyll({
         scene: this.graphics.scene,
+        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -76,6 +78,7 @@ class OceanSatelliteDemo extends Game {
       'cloud',
       new Cloud({
         scene: this.graphics.scene,
+        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -86,6 +89,7 @@ class OceanSatelliteDemo extends Game {
       'tss',
       new Tss({
         scene: this.graphics.scene,
+        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -96,6 +100,7 @@ class OceanSatelliteDemo extends Game {
       'aod',
       new Aod({
         scene: this.graphics.scene,
+        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -106,6 +111,7 @@ class OceanSatelliteDemo extends Game {
       'ssc',
       new Ssc({
         scene: this.graphics.scene,
+        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -205,7 +211,7 @@ class OceanSatelliteDemo extends Game {
     ]);
 
     // load texture
-    const colorMapTexture = new THREE.TextureLoader().load(
+    const colorMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
       'assets/images/world.topo.bathy.200409.3x5400x2700.jpg'
     );
     colorMapTexture.minFilter = THREE.LinearMipMapLinearFilter;
@@ -229,7 +235,7 @@ class OceanSatelliteDemo extends Game {
   }
 
   loadSatellite() {
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader(this.graphics.loadingManager);
     loader.load(
       'assets/models/satellite.glb',
       // onLoad callback function
@@ -255,7 +261,7 @@ class OceanSatelliteDemo extends Game {
   }
 
   loadSpaceCubeTexture() {
-    const loader = new THREE.CubeTextureLoader();
+    const loader = new THREE.CubeTextureLoader(this.graphics.loadingManager);
     const cubeTexture = loader.load([
       './assets/images/space-posx.jpg',
       './assets/images/space-negx.jpg',

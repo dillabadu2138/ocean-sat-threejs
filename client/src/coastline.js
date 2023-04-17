@@ -51,7 +51,7 @@ export class Coastline {
 
   loadCoastline(params) {
     // load a topojson file
-    const loader = new THREE.FileLoader();
+    const loader = new THREE.FileLoader(this.params.loadingManager);
     loader.load(
       // resource URL
       'assets/data/earth-topo.json',
