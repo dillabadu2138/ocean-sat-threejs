@@ -12,10 +12,10 @@ services:
       - '--providers.docker=true'
       # do not expose all containers unless explicitly told so
       - '--providers.docker.exposedbydefault=false'
-      # traefik will listen to incoming request on the port 8080 (HTTP)
-      - '--entrypoints.web.address=:8080'
+      # traefik will listen to incoming request on the port 8088 (HTTP)
+      - '--entrypoints.web.address=:8088'
     ports:
-      - '8080:8080'
+      - '8088:8088'
     volumes:
       # add Docker as a mounted volume, so that Traefik can read the labels of other services
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
