@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'lil-gui';
+import DisableDevtool from 'disable-devtool';
 
 // components
 import { Game } from './game.js';
@@ -279,6 +280,10 @@ let APP = null;
 function main() {
   APP = new OceanSatelliteDemo();
   console.log(APP);
+
+  if (process.env.NODE_ENV === 'production') {
+    DisableDevtool();
+  }
 }
 
 main();
