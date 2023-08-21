@@ -14,6 +14,9 @@ services:
       - '--providers.docker.exposedbydefault=false'
       # traefik will listen to incoming request on the port 8088 (HTTP)
       - '--entrypoints.web.address=:8088'
+      # add a constraint to only use services with the label "custom.label=satellite"
+      - '--providers.docker.constraints=Label(`custom.label`, `satellite`)'
+      - --log.level=INFO
     ports:
       - '8088:8088'
     volumes:
@@ -36,3 +39,5 @@ services:
       - 'traefik.http.routers.client.entrypoints=web'
       # set port the container listens to
       - 'traefik.http.services.client.loadbalancer.server.port=3000'
+      # Traefik will only use services with this label
+      - 'custom.label=satellite'
