@@ -1,11 +1,11 @@
 #version 300 es
 
-precision mediump float;
+precision highp float;
 
-// Uniforms
+// uniforms
 uniform sampler2D uColorMap;
 
-// Varyings
+// varyings
 in vec3 vPosition;
 
 // we need to declare an output for the fragment shader
@@ -22,9 +22,9 @@ vec2 convertPointToTexCoord(vec3 pos) {
   float longitude = atan(-pos.z, pos.x);
   float latitude = asin(pos.y);
 
-  // convert latitude and longitude to range [0, 1]
+  // convert longitude and latitude to range [0, 1]
   float u = (longitude / PI + 1.0) / 2.0;
-  float v = latitude /PI + 0.5;
+  float v = latitude / PI + 0.5;
 
   return vec2(u, v);
 }

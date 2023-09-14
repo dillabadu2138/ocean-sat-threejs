@@ -18,8 +18,8 @@ import { Aod } from './aod.js';
 import { Ssc } from './ssc.js';
 
 // shaders
-import colormapVertexShader from './shaders/colormap/colormap-vertex.glsl';
-import colormapFragmentShader from './shaders/colormap/colormap-fragment.glsl';
+import earthVertexShader from './shaders/earth/earth-vertex.glsl';
+import earthFragmentShader from './shaders/earth/earth-fragment.glsl';
 
 class OceanSatelliteDemo extends Game {
   constructor() {
@@ -203,7 +203,7 @@ class OceanSatelliteDemo extends Game {
 
   loadEarth() {
     // create a cube sphere
-    const resolution = 100;
+    const resolution = 1000;
     this.cubeSphere = new CubeSphere(resolution);
 
     // combine all geometries into one geometry
@@ -211,13 +211,22 @@ class OceanSatelliteDemo extends Game {
       ...this.cubeSphere.geometries,
     ]);
 
-    // load texture
+    // load textures
     const colorMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
       'assets/images/world.topo.bathy.200409.3x5400x2700.jpg'
     );
-    colorMapTexture.minFilter = THREE.LinearMipMapLinearFilter;
-    colorMapTexture.magFilter = THREE.NearestFilter;
+    colorMapTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    // colorMapTexture.magFilter = THREE.NearestFilter;
+    colorMapTexture.magFilter = THREE.LinearFilter;
     colorMapTexture.generateMipmaps = false;
+
+    const heightMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
+      'assets/images/gebco_bathy.5400x2700_8bit.jpg'
+    );
+    heightMapTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    // heightMapTexture.magFilter = THREE.NearestFilter;
+    heightMapTexture.magFilter = THREE.LinearFilter;
+    heightMapTexture.generateMipmaps = false;
 
     // create material
     const material = new THREE.RawShaderMaterial({
@@ -225,14 +234,51 @@ class OceanSatelliteDemo extends Game {
         uColorMap: {
           value: colorMapTexture,
         },
+        uHeightMap: {
+          value: heightMapTexture,
+        },
+        uHeightRangeMin: {
+          value: -8000.0,
+        },
+        uHeightRangeMax: {
+          value: 8200.0,
+        },
+        uHeightMultiplier: {
+          value: 10.0,
+        },
       },
-      vertexShader: colormapVertexShader,
-      fragmentShader: colormapFragmentShader,
+      vertexShader: earthVertexShader,
+      fragmentShader: earthFragmentShader,
     });
 
     // add to scene
     this.earthMesh = new THREE.Mesh(earthGeometry, material);
     this.graphics.scene.add(this.earthMesh);
+
+    // create gui parameters for earth
+    this.guiParams.earth = this.earthMesh;
+
+    // add gui for earth
+    const earthRollup = this.gui.addFolder('지구(Earth)');
+    earthRollup.open();
+
+    // control minimum height minimum value
+    earthRollup
+      .add(this.guiParams.earth.material.uniforms.uHeightRangeMin, 'value', -10000, -7000.0)
+      .step(1)
+      .name('Height 최솟값');
+
+    // control maximum height maximum value
+    earthRollup
+      .add(this.guiParams.earth.material.uniforms.uHeightRangeMax, 'value', 7000, 9000)
+      .step(1)
+      .name('Height 최댓값');
+
+    // control height multiplier value
+    earthRollup
+      .add(this.guiParams.earth.material.uniforms.uHeightMultiplier, 'value', 1.0, 100.0)
+      .step(1)
+      .name('Height 스케일');
   }
 
   loadSatellite() {
