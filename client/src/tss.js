@@ -41,7 +41,7 @@ export class Tss {
 
     // add gui for TSS
     const tssRollup = this.params.gui.addFolder('총 부유물(TSS)');
-    tssRollup.open();
+    tssRollup.close();
 
     // control visibility
     tssRollup.add(this.params.guiParams.tss, 'visible').name('TSS 활성화');

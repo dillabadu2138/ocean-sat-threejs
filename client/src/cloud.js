@@ -21,6 +21,10 @@ export class Cloud {
         uniforms: {
           uOpacity: { value: 1.0 },
           uPointSize: { value: 1 },
+          uHeightCloud: { value: 10000.0 },
+          uHeightMultiplier: {
+            value: 10.0,
+          },
         },
         vertexShader: cloudVertexShader,
         fragmentShader: cloudFragmentShader,
@@ -37,7 +41,7 @@ export class Cloud {
 
     // add gui for cloud
     const cloudRollup = this.params.gui.addFolder('구름 영상(cloud)');
-    cloudRollup.open();
+    cloudRollup.close();
 
     // control visibility
     cloudRollup.add(this.params.guiParams.cloud, 'visible').name('구름 영상 활성화(visible)');
@@ -59,6 +63,18 @@ export class Cloud {
       .max(4)
       .step(0.01)
       .name('구름 영상 점 크기(pointSize');
+
+    // control cloud height
+    cloudRollup
+      .add(this.params.guiParams.cloud.material.uniforms.uHeightCloud, 'value', 0.0, 10000.0)
+      .step(1)
+      .name('구름 높이');
+
+    // control height multiplier value
+    cloudRollup
+      .add(this.params.guiParams.cloud.material.uniforms.uHeightMultiplier, 'value', 1.0, 100.0)
+      .step(1)
+      .name('Height 스케일');
   }
 
   createMesh(state) {

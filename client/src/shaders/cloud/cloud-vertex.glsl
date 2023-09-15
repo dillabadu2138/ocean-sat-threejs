@@ -6,6 +6,8 @@ precision highp float;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform float uPointSize;
+uniform float uHeightCloud;
+uniform float uHeightMultiplier;
 
 // attributes
 in vec3 position;
@@ -32,9 +34,15 @@ void main(){
   // set point position
   vec2 coords = position.xy + instanceWorldPosition;
 
+  // calculate point on unit sphere
   vec3 pos = convertCoordinateToPoint(coords);
 
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  // move the position along the normal
+  float earthRadius = 6371000.0;
+  vec3 newPosition = pos + pos * uHeightCloud * uHeightMultiplier / earthRadius;
+
+  // Compute the position of the vertex using a standard formula
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 
   gl_PointSize = uPointSize;
 }

@@ -41,7 +41,7 @@ export class Aod {
 
     // add gui for AOD
     const aodRollup = this.params.gui.addFolder('에어로졸 광학 두께(AOD)');
-    aodRollup.open();
+    aodRollup.close();
 
     // control visibility
     aodRollup.add(this.params.guiParams.aod, 'visible').name('AOD 활성화');

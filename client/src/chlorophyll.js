@@ -40,8 +40,8 @@ export class Chlorophyll {
     this.params.guiParams.chlorophyll = this.chlMesh;
 
     // add gui for coastline
-    const chlRollup = this.params.gui.addFolder('클로로필(chlorophyll)');
-    chlRollup.open();
+    const chlRollup = this.params.gui.addFolder('클로로필 분포(Chlorophyll concentration)');
+    chlRollup.close();
 
     // control visibility
     chlRollup.add(this.params.guiParams.chlorophyll, 'visible').name('클로로필 활성화(visible)');

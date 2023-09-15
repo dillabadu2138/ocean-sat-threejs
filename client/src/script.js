@@ -260,7 +260,7 @@ class OceanSatelliteDemo extends Game {
 
     // add gui for earth
     const earthRollup = this.gui.addFolder('지구(Earth)');
-    earthRollup.open();
+    earthRollup.close();
 
     // control minimum height minimum value
     earthRollup

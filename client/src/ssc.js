@@ -24,7 +24,7 @@ export class Ssc {
 
     // add gui for SSC
     const sscRollup = this.params.gui.addFolder('표층해류(SSC)');
-    sscRollup.open();
+    sscRollup.close();
 
     // control visibility
     sscRollup.add(this.params.guiParams.ssc, 'visible').name('SSC 활성화');
