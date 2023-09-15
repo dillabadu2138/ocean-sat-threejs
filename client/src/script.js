@@ -264,13 +264,13 @@ class OceanSatelliteDemo extends Game {
 
     // control minimum height minimum value
     earthRollup
-      .add(this.guiParams.earth.material.uniforms.uHeightRangeMin, 'value', -10000, -7000.0)
+      .add(this.guiParams.earth.material.uniforms.uHeightRangeMin, 'value', -10000, 0.0)
       .step(1)
       .name('Height 최솟값');
 
     // control maximum height maximum value
     earthRollup
-      .add(this.guiParams.earth.material.uniforms.uHeightRangeMax, 'value', 7000, 9000)
+      .add(this.guiParams.earth.material.uniforms.uHeightRangeMax, 'value', 0.0, 9000.0)
       .step(1)
       .name('Height 최댓값');
 

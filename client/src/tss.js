@@ -81,6 +81,7 @@ export class Tss {
     return Promise.all(promises).then((result) => {
       // draw points
       this.tssMesh = new THREE.Points(result[0], result[1]);
+      this.tssMesh.visible = false;
       this.params.scene.add(this.tssMesh);
 
       // add dat.gui

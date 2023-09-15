@@ -67,6 +67,7 @@ export class Cloud {
     return Promise.all(promises).then((result) => {
       // draw points
       this.cloudMesh = new THREE.Points(result[0], result[1]);
+      this.cloudMesh.visible = false;
       this.params.scene.add(this.cloudMesh);
 
       // add dat.gui

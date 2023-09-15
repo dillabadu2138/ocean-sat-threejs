@@ -157,6 +157,7 @@ export class Ssc {
 
         // draw points
         this.sscMesh = new THREE.Points(sscGeometry, sscMaterial);
+        this.sscMesh.visible = false;
         params.scene.add(this.sscMesh);
 
         // add dat.gui

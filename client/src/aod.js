@@ -81,6 +81,7 @@ export class Aod {
     return Promise.all(promises).then((result) => {
       // draw points
       this.aodMesh = new THREE.Points(result[0], result[1]);
+      this.aodMesh.visible = false;
       this.params.scene.add(this.aodMesh);
 
       // add dat.gui
