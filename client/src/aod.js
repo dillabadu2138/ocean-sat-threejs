@@ -16,7 +16,7 @@ export class Aod {
   initialize(params) {
     // set initial state
     this.initialState = {
-      geometry: { url: 'assets/data/AOD_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv' },
+      geometry: { url: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_AOD.dat' },
       material: {
         url: 'assets/lut/Cool.png',
         uniforms: {
@@ -92,28 +92,12 @@ export class Aod {
   createGeometry(geometry) {
     const promise = this.loadFile(geometry.url);
 
-    return promise.then((data) => {
-      // skip header row
-      const rows = data.split('\n').slice(1);
-
+    return promise.then((arraybuffer) => {
       // create an instance of instanced buffer geometry
       const instancedBuffergeometry = new THREE.InstancedBufferGeometry();
 
-      // preallocate typed arrays
-      const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
-      const instanceAod = new Float32Array(rows.length); // val
-
-      // iterate over rows
-      for (let i = 0; i < rows.length; i++) {
-        const values = rows[i].split(','); // lon, lat, val
-
-        // instanced position
-        instanceWorldPosition[i * 2] = values[0]; // lon
-        instanceWorldPosition[i * 2 + 1] = values[1]; // lat
-
-        // instanced aod
-        instanceAod[i] = values[2];
-      }
+      // create typed arrays
+      const instanceAod = new Float32Array(arraybuffer); // lon lat val
 
       // set attributes to this geometry
       instancedBuffergeometry.setAttribute(
@@ -121,12 +105,8 @@ export class Aod {
         new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
       );
       instancedBuffergeometry.setAttribute(
-        'instanceWorldPosition',
-        new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
-      );
-      instancedBuffergeometry.setAttribute(
         'instanceAod',
-        new THREE.InstancedBufferAttribute(instanceAod, 1)
+        new THREE.InstancedBufferAttribute(instanceAod, 3)
       );
 
       return instancedBuffergeometry;
@@ -164,7 +144,9 @@ export class Aod {
 
   loadFile(url) {
     return new Promise((resolve) => {
-      new THREE.FileLoader(this.params.loadingManager).load(url, resolve);
+      const loader = new THREE.FileLoader(this.params.loadingManager);
+      loader.setResponseType('arraybuffer');
+      loader.load(url, resolve);
     });
   }
 

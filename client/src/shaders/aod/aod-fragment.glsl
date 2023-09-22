@@ -15,6 +15,12 @@ in float vAod;
 out vec4 fragColor;
 
 void main() {
+  // filter out fillValue
+  if (vAod < -32000.0) {
+    discard;
+    return;
+  }
+
   // calculate pixel value 0 to 1
   float pixel = ( vAod - uColorRangeMin) / (uColorRangeMax - uColorRangeMin);
 

@@ -9,8 +9,7 @@ uniform float uPointSize;
 
 // attributes
 in vec3 position;
-in vec2 instanceWorldPosition; // x y translation offsets for an instance
-in float instanceAod;
+in vec3 instanceAod;
 
 // varyings
 out float vAod;
@@ -26,7 +25,7 @@ vec3 convertCoordinateToPoint(vec2 coord){
 }
 
 void main(){
-  vec2 coords = position.xy + instanceWorldPosition;
+  vec2 coords = position.xy + instanceAod.xy;
 
   vec3 pos = convertCoordinateToPoint(coords);
 
@@ -34,5 +33,5 @@ void main(){
 
   gl_PointSize = uPointSize;
 
-  vAod = instanceAod;
+  vAod = instanceAod.z;
 }
