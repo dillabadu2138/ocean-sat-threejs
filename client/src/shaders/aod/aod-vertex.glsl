@@ -5,14 +5,12 @@ precision highp float;
 // uniforms
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
-uniform float uPointSize;
 
 // attributes
 in vec3 position;
-in vec3 instanceAod;
 
 // varyings
-out float vAod;
+out vec2 vWorldPosition;
 
 // calculate point on unit sphere given longitude and latitude
 vec3 convertCoordinateToPoint(vec2 coord){
@@ -25,13 +23,12 @@ vec3 convertCoordinateToPoint(vec2 coord){
 }
 
 void main(){
-  vec2 coords = position.xy + instanceAod.xy;
+  vec2 coords = position.xy;
 
   vec3 pos = convertCoordinateToPoint(coords);
 
+  // Compute the position of the vertex using a standard formula
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 
-  gl_PointSize = uPointSize;
-
-  vAod = instanceAod.z;
+  vWorldPosition = position.xy;
 }

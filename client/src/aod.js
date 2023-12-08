@@ -16,15 +16,21 @@ export class Aod {
   initialize(params) {
     // set initial state
     this.initialState = {
-      geometry: { url: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_AOD.dat' },
       material: {
-        url: 'assets/lut/Cool.png',
+        url_lut: 'assets/lut/Cool.png',
+        url_data: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_AOD.png',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
+          uDataTexture: { value: null },
           uColorRangeMin: { value: 0 },
           uColorRangeMax: { value: 2 },
-          uPointSize: { value: 1 },
+          // [minX, minY, maxX, maxY]
+          uImageBounds: {
+            value: [
+              112.7846939086914091, 24.0674095153808558, 146.4846939086914119, 48.3674095153808565,
+            ],
+          },
         },
         vertexShader: aodVertexShader,
         fragmentShader: aodFragmentShader,
@@ -65,23 +71,16 @@ export class Aod {
     aodRollup
       .add(this.params.guiParams.aod.material.uniforms.uColorRangeMax, 'value', 1, 5)
       .name('AOD 범위 최댓값');
-
-    // control point size
-    aodRollup
-      .add(this.params.guiParams.aod.material.uniforms.uPointSize, 'value')
-      .min(1)
-      .max(4)
-      .step(0.01)
-      .name('AOD 점 크기');
   }
 
   createMesh(state) {
-    const promises = [this.createGeometry(state.geometry), this.createMaterial(state.material)];
+    const promises = [this.createGeometry(), this.createMaterial(state.material)];
 
     return Promise.all(promises).then((result) => {
-      // draw points
-      this.aodMesh = new THREE.Points(result[0], result[1]);
-      this.aodMesh.visible = false;
+      // draw
+      this.aodMesh = new THREE.Mesh(result[0], result[1]);
+      this.aodMesh.frustumCulled = false;
+      // this.aodMesh.visible = false;
       this.params.scene.add(this.aodMesh);
 
       // add dat.gui
@@ -89,40 +88,77 @@ export class Aod {
     });
   }
 
-  createGeometry(geometry) {
-    const promise = this.loadFile(geometry.url);
+  createGeometry() {
+    // create an instance of buffer geometry
+    const geometry = new THREE.BufferGeometry();
 
-    return promise.then((arraybuffer) => {
-      // create an instance of instanced buffer geometry
-      const instancedBuffergeometry = new THREE.InstancedBufferGeometry();
+    // create vertices
+    // FIXME: hardcoded
+    const width = 337;
+    const height = 243;
+    const positions = new Float32Array(width * height * 3);
+    const scaleX = 0.1;
+    const scaleY = 0.1;
+    for (let i = 0; i < width; ++i) {
+      for (let j = 0; j < height; ++j) {
+        const index = (i + j * width) * 3;
+        positions[index + 0] =
+          this.initialState.material.uniforms.uImageBounds.value[0] + i * scaleX;
+        positions[index + 1] =
+          this.initialState.material.uniforms.uImageBounds.value[1] + j * scaleY;
+        positions[index + 2] = 0;
+      }
+    }
 
-      // create typed arrays
-      const instanceAod = new Float32Array(arraybuffer); // lon lat val
+    // create indices
+    let resolution_x = 337;
+    let resolution_y = 243;
+    const indices = new Uint32Array((resolution_y - 1) * (resolution_x - 1) * 2 * 3); // times 6 because of two triangles
 
-      // set attributes to this geometry
-      instancedBuffergeometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
-      );
-      instancedBuffergeometry.setAttribute(
-        'instanceAod',
-        new THREE.InstancedBufferAttribute(instanceAod, 3)
-      );
+    let triangleIndex = 0;
+    for (let y = 0; y < resolution_y; y++) {
+      for (let x = 0; x < resolution_x; x++) {
+        const i = x + y * resolution_x;
 
-      return instancedBuffergeometry;
-    });
+        if (x !== resolution_x - 1 && y !== resolution_y - 1) {
+          // first triangle
+          indices[triangleIndex] = i;
+          indices[triangleIndex + 1] = i + resolution_x + 1;
+          indices[triangleIndex + 2] = i + resolution_x;
+          // second triangle
+          indices[triangleIndex + 3] = i;
+          indices[triangleIndex + 4] = i + 1;
+          indices[triangleIndex + 5] = i + resolution_x + 1;
+
+          triangleIndex += 6;
+        }
+      }
+    }
+
+    // set attributes to this geometry
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+    return Promise.resolve(geometry);
   }
 
   createMaterial(material) {
-    const promise = this.loadTexture(material.url);
+    const promises = [this.loadTexture(material.url_data), this.loadTexture(material.url_lut)];
 
-    return promise.then((texture) => {
+    return Promise.all(promises).then((textures) => {
+      textures[0].flipY = false;
+      textures[0].generateMipmaps = false;
+      textures[0].magFilter = THREE.NearestFilter;
+      textures[0].minFilter = THREE.NearestFilter;
+
       // create uniforms properties
       const uniformsProperties = {};
       Object.keys(material.uniforms).map((key) => {
         // copy and update value
-        if (key === 'uLutTexture') {
-          uniformsProperties[key] = { ...material.uniforms[key], value: texture };
+        if (key === 'uDataTexture') {
+          uniformsProperties[key] = { ...material.uniforms[key], value: textures[0] };
+        } else if (key === 'uLutTexture') {
+          uniformsProperties[key] = { ...material.uniforms[key], value: textures[1] };
         } else {
           // just copy the value otherwise
           uniformsProperties[key] = material.uniforms[key];

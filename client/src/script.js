@@ -238,10 +238,10 @@ class OceanSatelliteDemo extends Game {
           value: heightMapTexture,
         },
         uHeightRangeMin: {
-          value: -8000.0,
+          value: 0,
         },
         uHeightRangeMax: {
-          value: 8200.0,
+          value: 0,
         },
         uHeightMultiplier: {
           value: 10.0,

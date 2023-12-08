@@ -81,6 +81,7 @@ export class Chlorophyll {
     return Promise.all(promises).then((result) => {
       // draw points
       this.chlMesh = new THREE.Points(result[0], result[1]);
+      this.chlMesh.visible = false;
       this.params.scene.add(this.chlMesh);
 
       // add dat.gui
