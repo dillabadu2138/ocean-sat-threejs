@@ -16,15 +16,21 @@ export class Tss {
   initialize(params) {
     // set initial state
     this.initialState = {
-      geometry: { url: 'assets/data/TSS_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv' },
       material: {
-        url: 'assets/lut/Plasma.png',
+        url_lut: 'assets/lut/Plasma.png',
+        url_data: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_TSS.png',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
+          uDataTexture: { value: null },
           uColorRangeMin: { value: 0 },
           uColorRangeMax: { value: 2 },
-          uPointSize: { value: 1 },
+          // [minX, minY, maxX, maxY]
+          uImageBounds: {
+            value: [
+              116.3168664550781273, 23.7032745361328097, 146.2618664550781205, 48.3432745361328102,
+            ],
+          },
         },
         vertexShader: tssVertexShader,
         fragmentShader: tssFragmentShader,
@@ -65,22 +71,15 @@ export class Tss {
     tssRollup
       .add(this.params.guiParams.tss.material.uniforms.uColorRangeMax, 'value', 1, 5)
       .name('TSS 범위 최댓값');
-
-    // control point size
-    tssRollup
-      .add(this.params.guiParams.tss.material.uniforms.uPointSize, 'value')
-      .min(1)
-      .max(4)
-      .step(0.01)
-      .name('TSS 점 크기');
   }
 
   createMesh(state) {
-    const promises = [this.createGeometry(state.geometry), this.createMaterial(state.material)];
+    const promises = [this.createGeometry(), this.createMaterial(state.material)];
 
     return Promise.all(promises).then((result) => {
       // draw points
-      this.tssMesh = new THREE.Points(result[0], result[1]);
+      this.tssMesh = new THREE.Mesh(result[0], result[1]);
+      this.tssMesh.frustumCulled = false;
       this.tssMesh.visible = false;
       this.params.scene.add(this.tssMesh);
 
@@ -89,60 +88,77 @@ export class Tss {
     });
   }
 
-  createGeometry(geometry) {
-    const promise = this.loadFile(geometry.url);
+  createGeometry() {
+    // create an instance of buffer geometry
+    const geometry = new THREE.BufferGeometry();
 
-    return promise.then((data) => {
-      // skip header row
-      const rows = data.split('\n').slice(1);
-
-      // create an instance of instanced buffer geometry
-      const instancedBuffergeometry = new THREE.InstancedBufferGeometry();
-
-      // preallocate typed arrays
-      const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
-      const instanceTss = new Float32Array(rows.length); // val
-
-      // iterate over rows
-      for (let i = 0; i < rows.length; i++) {
-        const values = rows[i].split(','); // lon, lat, val
-
-        // instanced position
-        instanceWorldPosition[i * 2] = values[0]; // lon
-        instanceWorldPosition[i * 2 + 1] = values[1]; // lat
-
-        // instanced tss
-        instanceTss[i] = values[2];
+    // create positions
+    // FIXME: hardcoded
+    const width = 5989;
+    const height = 4928;
+    const positions = new Float32Array(width * height * 3);
+    const scaleX = 0.005;
+    const scaleY = 0.005;
+    for (let i = 0; i < width; ++i) {
+      for (let j = 0; j < height; ++j) {
+        const index = (i + j * width) * 3;
+        positions[index + 0] =
+          this.initialState.material.uniforms.uImageBounds.value[0] + i * scaleX;
+        positions[index + 1] =
+          this.initialState.material.uniforms.uImageBounds.value[1] + j * scaleY;
+        positions[index + 2] = 0;
       }
+    }
 
-      // set attributes to this geometry
-      instancedBuffergeometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
-      );
-      instancedBuffergeometry.setAttribute(
-        'instanceWorldPosition',
-        new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
-      );
-      instancedBuffergeometry.setAttribute(
-        'instanceTss',
-        new THREE.InstancedBufferAttribute(instanceTss, 1)
-      );
+    // create indices
+    let resolution_x = 5989;
+    let resolution_y = 4928;
+    const indices = new Uint32Array((resolution_y - 1) * (resolution_x - 1) * 2 * 3); // times 6 because of two triangles
 
-      return instancedBuffergeometry;
-    });
+    let triangleIndex = 0;
+    for (let y = 0; y < resolution_y; y++) {
+      for (let x = 0; x < resolution_x; x++) {
+        const i = x + y * resolution_x;
+
+        if (x !== resolution_x - 1 && y !== resolution_y - 1) {
+          // first triangle
+          indices[triangleIndex] = i;
+          indices[triangleIndex + 1] = i + resolution_x + 1;
+          indices[triangleIndex + 2] = i + resolution_x;
+          // second triangle
+          indices[triangleIndex + 3] = i;
+          indices[triangleIndex + 4] = i + 1;
+          indices[triangleIndex + 5] = i + resolution_x + 1;
+
+          triangleIndex += 6;
+        }
+      }
+    }
+
+    // set attributes to this geometry
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+    return Promise.resolve(geometry);
   }
 
   createMaterial(material) {
-    const promise = this.loadTexture(material.url);
+    const promises = [this.loadTexture(material.url_data), this.loadTexture(material.url_lut)];
 
-    return promise.then((texture) => {
+    return Promise.all(promises).then((textures) => {
+      textures[0].flipY = false;
+      textures[0].generateMipmaps = false;
+      textures[0].magFilter = THREE.NearestFilter;
+      textures[0].minFilter = THREE.NearestFilter;
+
       // create uniforms properties
       const uniformsProperties = {};
       Object.keys(material.uniforms).map((key) => {
         // copy and update value
-        if (key === 'uLutTexture') {
-          uniformsProperties[key] = { ...material.uniforms[key], value: texture };
+        if (key === 'uDataTexture') {
+          uniformsProperties[key] = { ...material.uniforms[key], value: textures[0] };
+        } else if (key === 'uLutTexture') {
+          uniformsProperties[key] = { ...material.uniforms[key], value: textures[1] };
         } else {
           // just copy the value otherwise
           uniformsProperties[key] = material.uniforms[key];
