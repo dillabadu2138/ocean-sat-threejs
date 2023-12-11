@@ -50,13 +50,13 @@ export class Aod {
     aodRollup.close();
 
     // control visibility
-    aodRollup.add(this.params.guiParams.aod, 'visible').name('AOD 활성화');
+    aodRollup.add(this.params.guiParams.aod, 'visible').name('활성화');
 
     // control opacity
     aodRollup
       .add(this.params.guiParams.aod.material.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
-      .name('AOD 투명도')
+      .name('투명도')
       .onChange((value) => {
         this.aodMesh.material.transparent = true;
         this.aodMesh.material.uniforms.uOpacity.value = value;
@@ -65,12 +65,12 @@ export class Aod {
     // control colorRange minimum
     aodRollup
       .add(this.params.guiParams.aod.material.uniforms.uColorRangeMin, 'value', 0, 1)
-      .name('AOD 범위 최솟값');
+      .name('범위 최솟값');
 
     // control colorRange maximum
     aodRollup
       .add(this.params.guiParams.aod.material.uniforms.uColorRangeMax, 'value', 1, 5)
-      .name('AOD 범위 최댓값');
+      .name('범위 최댓값');
   }
 
   createMesh(state) {

@@ -28,13 +28,13 @@ export class Coastline {
     coastlineRollup.close();
 
     // control visibility
-    coastlineRollup.add(this.params.guiParams.coastline, 'visible').name('해안선 활성화(visible)');
+    coastlineRollup.add(this.params.guiParams.coastline, 'visible').name('활성화');
 
     // control opacity
     coastlineRollup
       .add(this.params.guiParams.coastline.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
-      .name('해안선 투명도(opacity)')
+      .name('투명도')
       .onChange((value) => {
         this.material.transparent = true;
         this.material.uniforms.uOpacity.value = value;
@@ -43,7 +43,7 @@ export class Coastline {
     // control color picking
     coastlineRollup
       .addColor(this.params.guiParams.coastline.uniforms.uLineColor, 'value', 255)
-      .name('해안선 색상(color)')
+      .name('색상')
       .onChange((value) => {
         this.material.uniforms.uLineColor.value = value;
       });

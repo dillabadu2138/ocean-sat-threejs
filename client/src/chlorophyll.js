@@ -50,13 +50,13 @@ export class Chlorophyll {
     chlRollup.close();
 
     // control visibility
-    chlRollup.add(this.params.guiParams.chlorophyll, 'visible').name('클로로필 활성화(visible)');
+    chlRollup.add(this.params.guiParams.chlorophyll, 'visible').name('활성화');
 
     // control opacity
     chlRollup
       .add(this.params.guiParams.chlorophyll.material.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
-      .name('클로로필 투명도(opacity)')
+      .name('투명도')
       .onChange((value) => {
         this.chlMesh.material.transparent = true;
         this.chlMesh.material.uniforms.uOpacity.value = value;
@@ -65,12 +65,12 @@ export class Chlorophyll {
     // control colorRange minimum
     chlRollup
       .add(this.params.guiParams.chlorophyll.material.uniforms.uColorRangeMin, 'value', 0, 1)
-      .name('클로로필 범위 최솟값(color)');
+      .name('범위 최솟값');
 
     // control colorRange maximum
     chlRollup
       .add(this.params.guiParams.chlorophyll.material.uniforms.uColorRangeMax, 'value', 1, 5)
-      .name('클로로필 범위 최댓값(color)');
+      .name('범위 최댓값');
   }
 
   createMesh(state) {

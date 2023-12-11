@@ -50,13 +50,13 @@ export class Tss {
     tssRollup.close();
 
     // control visibility
-    tssRollup.add(this.params.guiParams.tss, 'visible').name('TSS 활성화');
+    tssRollup.add(this.params.guiParams.tss, 'visible').name('활성화');
 
     // control opacity
     tssRollup
       .add(this.params.guiParams.tss.material.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
-      .name('TSS 투명도')
+      .name('투명도')
       .onChange((value) => {
         this.tssMesh.material.transparent = true;
         this.tssMesh.material.uniforms.uOpacity.value = value;
@@ -65,12 +65,12 @@ export class Tss {
     // control colorRange minimum
     tssRollup
       .add(this.params.guiParams.tss.material.uniforms.uColorRangeMin, 'value', 0, 1)
-      .name('TSS 범위 최솟값');
+      .name('범위 최솟값');
 
     // control colorRange maximum
     tssRollup
       .add(this.params.guiParams.tss.material.uniforms.uColorRangeMax, 'value', 1, 5)
-      .name('TSS 범위 최댓값');
+      .name('범위 최댓값');
   }
 
   createMesh(state) {

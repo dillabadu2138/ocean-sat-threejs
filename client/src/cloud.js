@@ -20,7 +20,7 @@ export class Cloud {
       material: {
         uniforms: {
           uOpacity: { value: 1.0 },
-          uPointSize: { value: 1 },
+          uPointSize: { value: 2 },
           uHeightCloud: { value: 10000.0 },
           uHeightMultiplier: {
             value: 10.0,
@@ -44,13 +44,13 @@ export class Cloud {
     cloudRollup.close();
 
     // control visibility
-    cloudRollup.add(this.params.guiParams.cloud, 'visible').name('구름 영상 활성화(visible)');
+    cloudRollup.add(this.params.guiParams.cloud, 'visible').name('활성화');
 
     // control opacity
     cloudRollup
       .add(this.params.guiParams.cloud.material.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
-      .name('구름 영상 투명도(opacity)')
+      .name('투명도')
       .onChange((value) => {
         this.cloudMesh.material.transparent = true;
         this.cloudMesh.material.uniforms.uOpacity.value = value;
@@ -62,7 +62,7 @@ export class Cloud {
       .min(1)
       .max(4)
       .step(0.01)
-      .name('구름 영상 점 크기(pointSize');
+      .name('점 크기');
 
     // control cloud height
     cloudRollup

@@ -27,13 +27,13 @@ export class Ssc {
     sscRollup.close();
 
     // control visibility
-    sscRollup.add(this.params.guiParams.ssc, 'visible').name('SSC 활성화');
+    sscRollup.add(this.params.guiParams.ssc, 'visible').name('활성화');
 
     // control opacity
     sscRollup
       .add(this.params.guiParams.ssc.material.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
-      .name('SSC 투명도')
+      .name('투명도')
       .onChange((value) => {
         this.sscMesh.material.transparent = true;
         this.sscMesh.material.uniforms.uOpacity.value = value;
@@ -43,13 +43,13 @@ export class Ssc {
     sscRollup
       .add(this.params.guiParams.ssc.material.uniforms.uColorRangeMin, 'value', 0, 1)
       .step(0.01)
-      .name('SSC 범위 최솟값');
+      .name('범위 최솟값');
 
     // control colorRange maximum
     sscRollup
       .add(this.params.guiParams.ssc.material.uniforms.uColorRangeMax, 'value', 0.7, 5)
       .step(0.01)
-      .name('SSC 범위 최댓값');
+      .name('범위 최댓값');
 
     // control point size
     sscRollup
@@ -57,7 +57,7 @@ export class Ssc {
       .min(1)
       .max(4)
       .step(0.01)
-      .name('SSC 점 크기');
+      .name('점 크기');
   }
 
   loadSscData(params) {
@@ -148,7 +148,7 @@ export class Ssc {
               value: 1,
             },
             uPointSize: {
-              value: 1,
+              value: 2,
             },
           },
           vertexShader: sscVertexShader,
