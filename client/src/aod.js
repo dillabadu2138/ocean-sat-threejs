@@ -80,7 +80,7 @@ export class Aod {
       // draw
       this.aodMesh = new THREE.Mesh(result[0], result[1]);
       this.aodMesh.frustumCulled = false;
-      // this.aodMesh.visible = false;
+      this.aodMesh.visible = false;
       this.params.scene.add(this.aodMesh);
 
       // add dat.gui
