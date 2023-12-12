@@ -96,39 +96,33 @@ export class Aod {
     // FIXME: hardcoded
     const width = 337;
     const height = 243;
-    const positions = new Float32Array(width * height * 3);
     const scaleX = 0.1;
     const scaleY = 0.1;
-    for (let i = 0; i < width; ++i) {
-      for (let j = 0; j < height; ++j) {
+    const positions = new Float32Array(width * height * 3);
+    const indices = new Uint32Array((width - 1) * (height - 1) * 2 * 3); // times 6 because of two triangles
+    let triangleIndex = 0;
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < height; j++) {
+        // create vertices
         const index = (i + j * width) * 3;
         positions[index + 0] =
           this.initialState.material.uniforms.uImageBounds.value[0] + i * scaleX;
         positions[index + 1] =
           this.initialState.material.uniforms.uImageBounds.value[1] + j * scaleY;
         positions[index + 2] = 0;
-      }
-    }
 
-    // create indices
-    let resolution_x = 337;
-    let resolution_y = 243;
-    const indices = new Uint32Array((resolution_y - 1) * (resolution_x - 1) * 2 * 3); // times 6 because of two triangles
+        // create indices
+        const cur_ind = i + j * width;
 
-    let triangleIndex = 0;
-    for (let y = 0; y < resolution_y; y++) {
-      for (let x = 0; x < resolution_x; x++) {
-        const i = x + y * resolution_x;
-
-        if (x !== resolution_x - 1 && y !== resolution_y - 1) {
+        if (i !== width - 1 && j !== height - 1) {
           // first triangle
-          indices[triangleIndex] = i;
-          indices[triangleIndex + 1] = i + resolution_x + 1;
-          indices[triangleIndex + 2] = i + resolution_x;
+          indices[triangleIndex] = cur_ind;
+          indices[triangleIndex + 1] = cur_ind + width + 1;
+          indices[triangleIndex + 2] = cur_ind + width;
           // second triangle
-          indices[triangleIndex + 3] = i;
-          indices[triangleIndex + 4] = i + 1;
-          indices[triangleIndex + 5] = i + resolution_x + 1;
+          indices[triangleIndex + 3] = cur_ind;
+          indices[triangleIndex + 4] = cur_ind + 1;
+          indices[triangleIndex + 5] = cur_ind + width + 1;
 
           triangleIndex += 6;
         }
