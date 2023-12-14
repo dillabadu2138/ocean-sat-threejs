@@ -16,6 +16,12 @@ export class Chlorophyll {
   initialize(params) {
     // set initial state
     this.initialState = {
+      raster: {
+        width: 3000,
+        height: 2800,
+        scaleX: 0.01,
+        scaleY: 0.01,
+      },
       material: {
         url_lut: 'assets/lut/Turbo.png',
         url_data: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_Chl.png',
@@ -27,9 +33,7 @@ export class Chlorophyll {
           uColorRangeMax: { value: 2 },
           // [minX, minY, maxX, maxY]
           uImageBounds: {
-            value: [
-              116.3168664550781273, 23.7032745361328097, 146.2618664550781205, 48.3432745361328102,
-            ],
+            value: [116.0, 22.0, 146.0, 50.0],
           },
         },
         vertexShader: chlorophyllVertexShader,
@@ -92,11 +96,13 @@ export class Chlorophyll {
     const geometry = new THREE.BufferGeometry();
 
     // create vertices and indices
-    // FIXME: hardcoded
-    const width = 5989;
-    const height = 4928;
-    const scaleX = 0.005;
-    const scaleY = 0.005;
+    const width = this.initialState.raster.width;
+    const height = this.initialState.raster.height;
+    const scaleX = this.initialState.raster.scaleX;
+    const scaleY = this.initialState.raster.scaleY;
+    const llX = this.initialState.material.uniforms.uImageBounds.value[0];
+    const llY = this.initialState.material.uniforms.uImageBounds.value[1];
+
     const positions = new Float32Array(width * height * 3);
     const indices = new Uint32Array((width - 1) * (height - 1) * 2 * 3); // times 6 because of two triangles
     let triangleIndex = 0;
@@ -104,10 +110,8 @@ export class Chlorophyll {
       for (let j = 0; j < height; j++) {
         // create vertices
         const index = (i + j * width) * 3;
-        positions[index + 0] =
-          this.initialState.material.uniforms.uImageBounds.value[0] + i * scaleX;
-        positions[index + 1] =
-          this.initialState.material.uniforms.uImageBounds.value[1] + j * scaleY;
+        positions[index + 0] = llX + i * scaleX;
+        positions[index + 1] = llY + j * scaleY;
         positions[index + 2] = 0;
 
         // create indices

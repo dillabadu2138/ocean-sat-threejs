@@ -16,6 +16,12 @@ export class Aod {
   initialize(params) {
     // set initial state
     this.initialState = {
+      raster: {
+        width: 300,
+        height: 280,
+        scaleX: 0.1,
+        scaleY: 0.1,
+      },
       material: {
         url_lut: 'assets/lut/Cool.png',
         url_data: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_AOD.png',
@@ -27,9 +33,7 @@ export class Aod {
           uColorRangeMax: { value: 2 },
           // [minX, minY, maxX, maxY]
           uImageBounds: {
-            value: [
-              112.7846939086914091, 24.0674095153808558, 146.4846939086914119, 48.3674095153808565,
-            ],
+            value: [116.0, 22.0, 146.0, 50.0],
           },
         },
         vertexShader: aodVertexShader,
@@ -92,12 +96,14 @@ export class Aod {
     // create an instance of buffer geometry
     const geometry = new THREE.BufferGeometry();
 
-    // create vertices
-    // FIXME: hardcoded
-    const width = 337;
-    const height = 243;
-    const scaleX = 0.1;
-    const scaleY = 0.1;
+    // create vertices and indices
+    const width = this.initialState.raster.width;
+    const height = this.initialState.raster.height;
+    const scaleX = this.initialState.raster.scaleX;
+    const scaleY = this.initialState.raster.scaleY;
+    const llX = this.initialState.material.uniforms.uImageBounds.value[0];
+    const llY = this.initialState.material.uniforms.uImageBounds.value[1];
+
     const positions = new Float32Array(width * height * 3);
     const indices = new Uint32Array((width - 1) * (height - 1) * 2 * 3); // times 6 because of two triangles
     let triangleIndex = 0;
@@ -105,10 +111,8 @@ export class Aod {
       for (let j = 0; j < height; j++) {
         // create vertices
         const index = (i + j * width) * 3;
-        positions[index + 0] =
-          this.initialState.material.uniforms.uImageBounds.value[0] + i * scaleX;
-        positions[index + 1] =
-          this.initialState.material.uniforms.uImageBounds.value[1] + j * scaleY;
+        positions[index + 0] = llX + i * scaleX;
+        positions[index + 1] = llY + j * scaleY;
         positions[index + 2] = 0;
 
         // create indices
