@@ -84,6 +84,7 @@ export class Tss {
       // draw points
       this.tssMesh = new THREE.Mesh(result[0], result[1]);
       this.tssMesh.frustumCulled = false;
+      this.tssMesh.material.depthTest = false;
       this.tssMesh.visible = false;
       this.params.scene.add(this.tssMesh);
 

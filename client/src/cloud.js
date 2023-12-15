@@ -21,9 +21,9 @@ export class Cloud {
         uniforms: {
           uOpacity: { value: 1.0 },
           uPointSize: { value: 2 },
-          uHeightCloud: { value: 10000.0 },
+          uHeightCloud: { value: 0.0 },
           uHeightMultiplier: {
-            value: 10.0,
+            value: 1.0,
           },
         },
         vertexShader: cloudVertexShader,
