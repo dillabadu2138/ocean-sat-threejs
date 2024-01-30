@@ -14,3 +14,17 @@ services:
       - ./client:/client:consistent
     ports:
       - '3000:3000'
+
+  ###########################
+  #   server container
+  ###########################
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: uvicorn app.api.server:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      # hostPath:containerPath:mode
+      - ./server:/server:consistent
+    ports:
+      - '8000:8000'

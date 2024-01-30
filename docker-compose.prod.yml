@@ -41,3 +41,22 @@ services:
       - 'traefik.http.services.client.loadbalancer.server.port=3000'
       # Traefik will only use services with this label
       - 'custom.label=satellite'
+
+  ###########################
+  #   server container
+  ###########################
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: gunicorn app.api.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+    labels:
+      # explicitly tell Traefik to expose this container
+      - 'traefik.enable=true'
+      # specify the rule used to match a request to this service
+      - 'traefik.http.routers.server.rule=Host(`211.178.39.246`) && PathPrefix(`/api`)'
+      # allow request only from the predefined entry point named "web"
+      - 'traefik.http.routers.server.entrypoints=web'
+      # set port the container listens to
+      - 'traefik.http.services.server.loadbalancer.server.port=8000'
+      - 'custom.label=satellite'
