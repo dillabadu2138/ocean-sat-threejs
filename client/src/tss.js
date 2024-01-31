@@ -24,7 +24,7 @@ export class Tss {
       },
       material: {
         url_lut: 'assets/lut/Plasma.png',
-        url_data: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_TSS.png',
+        url_data: null,
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
@@ -142,7 +142,7 @@ export class Tss {
   }
 
   createMaterial(material) {
-    const promises = [this.loadTexture(material.url_data), this.loadTexture(material.url_lut)];
+    const promises = [this.getTexture(), this.loadTexture(material.url_lut)];
 
     return Promise.all(promises).then((textures) => {
       textures[0].flipY = false;
@@ -187,5 +187,15 @@ export class Tss {
     return new Promise((resolve) => {
       new THREE.TextureLoader(this.params.loadingManager).load(url, resolve);
     });
+  }
+
+  getTexture() {
+    return fetch('/api/images/TSS')
+      .then((response) => response.blob())
+      .then((blob) => {
+        return new Promise((resolve) =>
+          new THREE.TextureLoader().load(URL.createObjectURL(blob), resolve)
+        );
+      });
   }
 }
