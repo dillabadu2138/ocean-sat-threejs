@@ -12,5 +12,11 @@ module.exports = merge(commonConfiguration, {
       directory: path.join(__dirname, '../dist'),
     },
     hot: true,
+    proxy: {
+      '/api/': {
+        target: 'http://server:8000',
+        changeOrigin: true,
+      },
+    },
   },
 });

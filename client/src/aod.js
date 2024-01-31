@@ -24,7 +24,7 @@ export class Aod {
       },
       material: {
         url_lut: 'assets/lut/Cool.png',
-        url_data: 'assets/data/GK2B_GOCI2_L2_20220809_001530_LA_AOD.png',
+        url_data: null,
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
@@ -85,7 +85,7 @@ export class Aod {
       this.aodMesh = new THREE.Mesh(result[0], result[1]);
       this.aodMesh.frustumCulled = false;
       this.aodMesh.material.depthTest = false;
-      this.aodMesh.visible = false;
+      this.aodMesh.visible = true;
       this.params.scene.add(this.aodMesh);
 
       // add dat.gui
@@ -142,7 +142,7 @@ export class Aod {
   }
 
   createMaterial(material) {
-    const promises = [this.loadTexture(material.url_data), this.loadTexture(material.url_lut)];
+    const promises = [this.getTexture(), this.loadTexture(material.url_lut)];
 
     return Promise.all(promises).then((textures) => {
       textures[0].flipY = false;
@@ -189,5 +189,15 @@ export class Aod {
     return new Promise((resolve) => {
       new THREE.TextureLoader(this.params.loadingManager).load(url, resolve);
     });
+  }
+
+  getTexture() {
+    return fetch('/api/images/AOD')
+      .then((response) => response.blob())
+      .then((blob) => {
+        return new Promise((resolve) =>
+          new THREE.TextureLoader().load(URL.createObjectURL(blob), resolve)
+        );
+      });
   }
 }

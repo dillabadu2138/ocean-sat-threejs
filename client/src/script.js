@@ -108,15 +108,15 @@ class OceanSatelliteDemo extends Game {
     );
 
     // add ssc
-    this.addEntity(
-      'ssc',
-      new Ssc({
-        scene: this.graphics.scene,
-        loadingManager: this.graphics.loadingManager,
-        gui: this.gui,
-        guiParams: this.guiParams,
-      })
-    );
+    // this.addEntity(
+    //   'ssc',
+    //   new Ssc({
+    //     scene: this.graphics.scene,
+    //     loadingManager: this.graphics.loadingManager,
+    //     gui: this.gui,
+    //     guiParams: this.guiParams,
+    //   })
+    // );
 
     // add light
     const light = new THREE.AmbientLight(0xffffff);

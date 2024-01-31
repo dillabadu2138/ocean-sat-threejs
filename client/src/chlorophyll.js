@@ -49,8 +49,9 @@ export class Chlorophyll {
     // create gui parameters for chlorophyll
     this.params.guiParams.chlorophyll = this.chlMesh;
 
-    // add gui for coastline
+    // add gui for chloropyhll
     const chlRollup = this.params.gui.addFolder('클로로필 분포(Chlorophyll concentration)');
+    chlRollup.close();
 
     // control visibility
     chlRollup.add(this.params.guiParams.chlorophyll, 'visible').name('활성화');
@@ -84,6 +85,7 @@ export class Chlorophyll {
       this.chlMesh = new THREE.Mesh(result[0], result[1]);
       this.chlMesh.frustumCulled = false;
       this.chlMesh.material.depthTest = false;
+      this.chlMesh.visible = false;
       this.params.scene.add(this.chlMesh);
 
       // add dat.gui
