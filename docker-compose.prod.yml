@@ -50,6 +50,9 @@ services:
       context: ./server
       dockerfile: Dockerfile
     command: gunicorn app.api.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+    volumes:
+      # hostPath:containerPath:mode
+      - ./server:/server:consistent
     labels:
       # explicitly tell Traefik to expose this container
       - 'traefik.enable=true'
