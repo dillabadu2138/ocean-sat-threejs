@@ -1,21 +1,17 @@
 import './styles.css';
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'lil-gui';
-import DisableDevtool from 'disable-devtool';
 
 // components
 import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
 import { controls } from './controls.js';
-import { helpers } from './helpers.js';
 import { Coastline } from './coastline.js';
 import { Chlorophyll } from './chlorophyll.js';
 import { Cloud } from './cloud.js';
 import { Tss } from './tss.js';
 import { Aod } from './aod.js';
-import { Ssc } from './ssc.js';
 
 // shaders
 import earthVertexShader from './shaders/earth/earth-vertex.glsl';
@@ -37,16 +33,6 @@ class OceanSatelliteDemo extends Game {
       new controls.MyOrbitControls({
         camera: this.graphics.camera,
         domElement: this.graphics.renderer.domElement,
-        gui: this.gui,
-        guiParams: this.guiParams,
-      })
-    );
-
-    // add axeshelper
-    this.addEntity(
-      'axesHelper',
-      new helpers.MyAxesHelper({
-        scene: this.graphics.scene,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -106,17 +92,6 @@ class OceanSatelliteDemo extends Game {
         guiParams: this.guiParams,
       })
     );
-
-    // add ssc
-    // this.addEntity(
-    //   'ssc',
-    //   new Ssc({
-    //     scene: this.graphics.scene,
-    //     loadingManager: this.graphics.loadingManager,
-    //     gui: this.gui,
-    //     guiParams: this.guiParams,
-    //   })
-    // );
 
     // add light
     const light = new THREE.AmbientLight(0xffffff);
@@ -203,7 +178,7 @@ class OceanSatelliteDemo extends Game {
 
   loadEarth() {
     // create a cube sphere
-    const resolution = 1000;
+    const resolution = 500;
     this.cubeSphere = new CubeSphere(resolution);
 
     // combine all geometries into one geometry
@@ -281,32 +256,6 @@ class OceanSatelliteDemo extends Game {
       .name('Height 스케일');
   }
 
-  loadSatellite() {
-    const loader = new GLTFLoader(this.graphics.loadingManager);
-    loader.load(
-      'assets/models/satellite.glb',
-      // onLoad callback function
-      (gltf) => {
-        // extract mesh from the loaded data
-        this.satelliteMesh = gltf.scene.children[0];
-
-        // align an object to the new axis
-        const curAxis = new THREE.Vector3(0, 1, 0); // the original dir of the satellite pointing up
-        const newAxis = new THREE.Vector3(-1, 1, -1);
-        this.satelliteMesh.quaternion.setFromUnitVectors(curAxis, newAxis.clone().normalize());
-
-        // set the model position
-        this.satelliteMesh.position.set(-1.001, 1.001, -1.001);
-
-        // scale down the model
-        this.satelliteMesh.scale.set(0.005, 0.005, 0.005);
-
-        // add to scene
-        this.graphics.scene.add(this.satelliteMesh);
-      }
-    );
-  }
-
   loadSpaceCubeTexture() {
     const loader = new THREE.CubeTextureLoader(this.graphics.loadingManager);
     const cubeTexture = loader.load([
@@ -325,11 +274,6 @@ let APP = null;
 
 function main() {
   APP = new OceanSatelliteDemo();
-  console.log(APP);
-
-  if (process.env.NODE_ENV === 'production') {
-    DisableDevtool();
-  }
 }
 
 main();
