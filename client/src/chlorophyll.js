@@ -23,7 +23,7 @@ export class Chlorophyll {
         scaleY: 0.01,
       },
       material: {
-        url_lut: 'assets/lut/Turbo.png',
+        url_lut: 'assets/lut/Turbo.webp',
         url_data: null,
         uniforms: {
           uOpacity: { value: 1.0 },

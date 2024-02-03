@@ -188,7 +188,7 @@ class OceanSatelliteDemo extends Game {
 
     // load textures
     const colorMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
-      'assets/images/world.topo.bathy.200409.3x5400x2700.jpg'
+      'assets/images/world.topo.bathy.200409.3x5400x2700.webp'
     );
     colorMapTexture.minFilter = THREE.LinearMipmapLinearFilter;
     // colorMapTexture.magFilter = THREE.NearestFilter;
@@ -196,7 +196,7 @@ class OceanSatelliteDemo extends Game {
     colorMapTexture.generateMipmaps = false;
 
     const heightMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
-      'assets/images/gebco_bathy.5400x2700_8bit.jpg'
+      'assets/images/gebco_bathy.5400x2700_8bit.webp'
     );
     heightMapTexture.minFilter = THREE.LinearMipmapLinearFilter;
     // heightMapTexture.magFilter = THREE.NearestFilter;
@@ -259,12 +259,12 @@ class OceanSatelliteDemo extends Game {
   loadSpaceCubeTexture() {
     const loader = new THREE.CubeTextureLoader(this.graphics.loadingManager);
     const cubeTexture = loader.load([
-      './assets/images/space-posx.jpg',
-      './assets/images/space-negx.jpg',
-      './assets/images/space-posy.jpg',
-      './assets/images/space-negy.jpg',
-      './assets/images/space-posz.jpg',
-      './assets/images/space-negz.jpg',
+      './assets/images/space-posx.webp',
+      './assets/images/space-negx.webp',
+      './assets/images/space-posy.webp',
+      './assets/images/space-negy.webp',
+      './assets/images/space-posz.webp',
+      './assets/images/space-negz.webp',
     ]);
     this.graphics.scene.background = cubeTexture;
   }

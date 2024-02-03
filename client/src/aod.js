@@ -23,7 +23,7 @@ export class Aod {
         scaleY: 0.1,
       },
       material: {
-        url_lut: 'assets/lut/Cool.png',
+        url_lut: 'assets/lut/Cool.webp',
         url_data: null,
         uniforms: {
           uOpacity: { value: 1.0 },

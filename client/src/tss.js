@@ -23,7 +23,7 @@ export class Tss {
         scaleY: 0.01,
       },
       material: {
-        url_lut: 'assets/lut/Plasma.png',
+        url_lut: 'assets/lut/Plasma.webp',
         url_data: null,
         uniforms: {
           uOpacity: { value: 1.0 },
