@@ -49,7 +49,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    command: gunicorn app.api.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+    command: hypercorn app.api.server:app --workers 4 --worker-class trio --bind 0.0.0.0:8000
     volumes:
       # hostPath:containerPath:mode
       - ./server:/server:consistent

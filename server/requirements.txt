@@ -1,3 +1,2 @@
 fastapi
-gunicorn
-uvicorn
+hypercorn[trio]
