@@ -6,7 +6,12 @@ from app.api.routes import router as api_router
 
 
 def get_application():
-    app = FastAPI(title="해양위성", version="1.0.0")
+    app = FastAPI(
+        title="해양위성",
+        version="1.0.0",
+        docs_url="/api/docs",
+        openapi_url="/api/openapi.json",
+    )
 
     app.add_middleware(
         CORSMiddleware,
@@ -21,5 +26,6 @@ def get_application():
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
     return app
+
 
 app = get_application()
