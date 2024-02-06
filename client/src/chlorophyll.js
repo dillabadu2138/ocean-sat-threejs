@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import { utils } from './utils';
+
 // shader
 import chlorophyllVertexShader from './shaders/chlorophyll/chlorophyll-vertex.glsl';
 import chlorophyllFragmentShader from './shaders/chlorophyll/chlorophyll-fragment.glsl';
@@ -24,7 +26,7 @@ export class Chlorophyll {
       },
       material: {
         url_lut: 'assets/lut/Turbo.webp',
-        url_data: null,
+        url_data: '/api/images/CHL',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
@@ -142,7 +144,7 @@ export class Chlorophyll {
   }
 
   createMaterial(material) {
-    const promises = [this.getTexture(), this.loadTexture(material.url_lut)];
+    const promises = [utils.getTexture(material.url_data), utils.loadTexture(material.url_lut)];
 
     return Promise.all(promises).then((textures) => {
       textures[0].flipY = false;
@@ -175,27 +177,5 @@ export class Chlorophyll {
 
       return rawShaderMaterial;
     });
-  }
-
-  loadFile(url) {
-    return new Promise((resolve) => {
-      new THREE.FileLoader(this.params.loadingManager).load(url, resolve);
-    });
-  }
-
-  loadTexture(url) {
-    return new Promise((resolve) => {
-      new THREE.TextureLoader(this.params.loadingManager).load(url, resolve);
-    });
-  }
-
-  getTexture() {
-    return fetch('/api/images/CHL')
-      .then((response) => response.blob())
-      .then((blob) => {
-        return new Promise((resolve) =>
-          new THREE.TextureLoader().load(URL.createObjectURL(blob), resolve)
-        );
-      });
   }
 }

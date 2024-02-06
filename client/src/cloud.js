@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import { utils } from './utils';
+
 // shader
 import cloudVertexShader from './shaders/cloud/cloud-vertex.glsl';
 import cloudFragmentShader from './shaders/cloud/cloud-fragment.glsl';
@@ -92,7 +94,7 @@ export class Cloud {
   }
 
   createGeometry(geometry) {
-    const promise = this.loadFile(geometry.url);
+    const promise = utils.loadFile(geometry.url);
 
     return promise.then((data) => {
       // skip header row
@@ -145,12 +147,6 @@ export class Cloud {
       });
 
       resolve(rawShaderMaterial);
-    });
-  }
-
-  loadFile(url) {
-    return new Promise((resolve) => {
-      new THREE.FileLoader(this.params.loadingManager).load(url, resolve);
     });
   }
 }

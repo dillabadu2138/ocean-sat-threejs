@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import { utils } from './utils';
+
 // shader
 import tssVertexShader from './shaders/tss/tss-vertex.glsl';
 import tssFragmentShader from './shaders/tss/tss-fragment.glsl';
@@ -24,7 +26,7 @@ export class Tss {
       },
       material: {
         url_lut: 'assets/lut/Plasma.webp',
-        url_data: null,
+        url_data: '/api/images/TSS',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
@@ -142,7 +144,7 @@ export class Tss {
   }
 
   createMaterial(material) {
-    const promises = [this.getTexture(), this.loadTexture(material.url_lut)];
+    const promises = [utils.getTexture(material.url_data), utils.loadTexture(material.url_lut)];
 
     return Promise.all(promises).then((textures) => {
       textures[0].flipY = false;
@@ -175,27 +177,5 @@ export class Tss {
 
       return rawShaderMaterial;
     });
-  }
-
-  loadFile(url) {
-    return new Promise((resolve) => {
-      new THREE.FileLoader(this.params.loadingManager).load(url, resolve);
-    });
-  }
-
-  loadTexture(url) {
-    return new Promise((resolve) => {
-      new THREE.TextureLoader(this.params.loadingManager).load(url, resolve);
-    });
-  }
-
-  getTexture() {
-    return fetch('/api/images/TSS')
-      .then((response) => response.blob())
-      .then((blob) => {
-        return new Promise((resolve) =>
-          new THREE.TextureLoader().load(URL.createObjectURL(blob), resolve)
-        );
-      });
   }
 }

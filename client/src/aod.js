@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import { utils } from './utils';
+
 // shader
 import aodVertexShader from './shaders/aod/aod-vertex.glsl';
 import aodFragmentShader from './shaders/aod/aod-fragment.glsl';
@@ -24,7 +26,7 @@ export class Aod {
       },
       material: {
         url_lut: 'assets/lut/Cool.webp',
-        url_data: null,
+        url_data: '/api/images/AOD',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
@@ -142,7 +144,7 @@ export class Aod {
   }
 
   createMaterial(material) {
-    const promises = [this.getTexture(), this.loadTexture(material.url_lut)];
+    const promises = [utils.getTexture(material.url_data), utils.loadTexture(material.url_lut)];
 
     return Promise.all(promises).then((textures) => {
       textures[0].flipY = false;
@@ -175,29 +177,5 @@ export class Aod {
 
       return rawShaderMaterial;
     });
-  }
-
-  loadFile(url) {
-    return new Promise((resolve) => {
-      const loader = new THREE.FileLoader(this.params.loadingManager);
-      loader.setResponseType('arraybuffer');
-      loader.load(url, resolve);
-    });
-  }
-
-  loadTexture(url) {
-    return new Promise((resolve) => {
-      new THREE.TextureLoader(this.params.loadingManager).load(url, resolve);
-    });
-  }
-
-  getTexture() {
-    return fetch('/api/images/AOD')
-      .then((response) => response.blob())
-      .then((blob) => {
-        return new Promise((resolve) =>
-          new THREE.TextureLoader().load(URL.createObjectURL(blob), resolve)
-        );
-      });
   }
 }
