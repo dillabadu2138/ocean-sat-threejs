@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Mesh, BufferGeometry, BufferAttribute, NearestFilter, RawShaderMaterial } from 'three';
 
 import { utils } from './utils';
 
@@ -84,7 +84,7 @@ export class Chlorophyll {
 
     return Promise.all(promises).then((result) => {
       // draw points
-      this.chlMesh = new THREE.Mesh(result[0], result[1]);
+      this.chlMesh = new Mesh(result[0], result[1]);
       this.chlMesh.frustumCulled = false;
       this.chlMesh.material.depthTest = false;
       this.chlMesh.visible = false;
@@ -97,7 +97,7 @@ export class Chlorophyll {
 
   createGeometry() {
     // create an instance of buffer geometry
-    const geometry = new THREE.BufferGeometry();
+    const geometry = new BufferGeometry();
 
     // create vertices and indices
     const width = this.initialState.raster.width;
@@ -137,8 +137,8 @@ export class Chlorophyll {
     }
 
     // set attributes to this geometry
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.setAttribute('position', new BufferAttribute(positions, 3));
+    geometry.setIndex(new BufferAttribute(indices, 1));
 
     return Promise.resolve(geometry);
   }
@@ -149,8 +149,8 @@ export class Chlorophyll {
     return Promise.all(promises).then((textures) => {
       textures[0].flipY = false;
       textures[0].generateMipmaps = false;
-      textures[0].magFilter = THREE.NearestFilter;
-      textures[0].minFilter = THREE.NearestFilter;
+      textures[0].magFilter = NearestFilter;
+      textures[0].minFilter = NearestFilter;
 
       // create uniforms properties
       const uniformsProperties = {};
@@ -167,7 +167,7 @@ export class Chlorophyll {
       });
 
       // create raw shader material
-      const rawShaderMaterial = new THREE.RawShaderMaterial({
+      const rawShaderMaterial = new RawShaderMaterial({
         uniforms: {
           ...uniformsProperties,
         },

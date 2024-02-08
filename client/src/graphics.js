@@ -1,11 +1,11 @@
-import * as THREE from 'three';
+import { WebGLRenderer, PerspectiveCamera, Scene, LoadingManager } from 'three';
 
 export class Graphics {
   constructor() {}
 
   initialize() {
     // create a webgl renderer
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new WebGLRenderer();
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -16,7 +16,7 @@ export class Graphics {
     window.addEventListener('resize', () => this.onWindowResize(), false);
 
     // create a camera
-    this.camera = new THREE.PerspectiveCamera(
+    this.camera = new PerspectiveCamera(
       40, // fov
       window.innerWidth / window.innerHeight, // aspect
       0.1, // near
@@ -25,10 +25,10 @@ export class Graphics {
     this.camera.position.set(-2, 2, -2);
 
     // create a scene
-    this.scene = new THREE.Scene();
+    this.scene = new Scene();
 
     // initialize the loading manager to handle all loading events
-    this.loadingManager = new THREE.LoadingManager();
+    this.loadingManager = new LoadingManager();
     this.loadingManager.onLoad = function () {
       console.log('Loading complete!');
     };

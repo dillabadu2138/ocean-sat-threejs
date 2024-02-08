@@ -1,5 +1,13 @@
 import './styles.css';
-import * as THREE from 'three';
+import {
+  AmbientLight,
+  TextureLoader,
+  LinearMipmapLinearFilter,
+  LinearFilter,
+  RawShaderMaterial,
+  Mesh,
+  CubeTextureLoader,
+} from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GUI } from 'lil-gui';
 
@@ -94,7 +102,7 @@ class OceanSatelliteDemo extends Game {
     );
 
     // add light
-    const light = new THREE.AmbientLight(0xffffff);
+    const light = new AmbientLight(0xffffff);
     this.graphics.scene.add(light);
 
     // load Earth
@@ -187,24 +195,24 @@ class OceanSatelliteDemo extends Game {
     ]);
 
     // load textures
-    const colorMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
+    const colorMapTexture = new TextureLoader(this.graphics.loadingManager).load(
       'assets/images/world.topo.bathy.200409.3x5400x2700.webp'
     );
-    colorMapTexture.minFilter = THREE.LinearMipmapLinearFilter;
-    // colorMapTexture.magFilter = THREE.NearestFilter;
-    colorMapTexture.magFilter = THREE.LinearFilter;
+    colorMapTexture.minFilter = LinearMipmapLinearFilter;
+    // colorMapTexture.magFilter = NearestFilter;
+    colorMapTexture.magFilter = LinearFilter;
     colorMapTexture.generateMipmaps = false;
 
-    const heightMapTexture = new THREE.TextureLoader(this.graphics.loadingManager).load(
+    const heightMapTexture = new TextureLoader(this.graphics.loadingManager).load(
       'assets/images/gebco_bathy.5400x2700_8bit.webp'
     );
-    heightMapTexture.minFilter = THREE.LinearMipmapLinearFilter;
-    // heightMapTexture.magFilter = THREE.NearestFilter;
-    heightMapTexture.magFilter = THREE.LinearFilter;
+    heightMapTexture.minFilter = LinearMipmapLinearFilter;
+    // heightMapTexture.magFilter = NearestFilter;
+    heightMapTexture.magFilter = LinearFilter;
     heightMapTexture.generateMipmaps = false;
 
     // create material
-    const material = new THREE.RawShaderMaterial({
+    const material = new RawShaderMaterial({
       uniforms: {
         uColorMap: {
           value: colorMapTexture,
@@ -227,7 +235,7 @@ class OceanSatelliteDemo extends Game {
     });
 
     // add to scene
-    this.earthMesh = new THREE.Mesh(earthGeometry, material);
+    this.earthMesh = new Mesh(earthGeometry, material);
     this.graphics.scene.add(this.earthMesh);
 
     // create gui parameters for earth
@@ -257,7 +265,7 @@ class OceanSatelliteDemo extends Game {
   }
 
   loadSpaceCubeTexture() {
-    const loader = new THREE.CubeTextureLoader(this.graphics.loadingManager);
+    const loader = new CubeTextureLoader(this.graphics.loadingManager);
     const cubeTexture = loader.load([
       './assets/images/space-posx.webp',
       './assets/images/space-negx.webp',

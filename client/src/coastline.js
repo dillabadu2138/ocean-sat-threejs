@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import * as topojson from 'topojson-client';
+import { FileLoader, RawShaderMaterial, Line, Vector2, BufferGeometry } from 'three';
+import { feature } from 'topojson-client';
 
 // shader
 import coastlineVertexShader from './shaders/coastline/coastline-vertex.glsl';
@@ -51,7 +51,7 @@ export class Coastline {
 
   loadCoastline(params) {
     // load a topojson file
-    const loader = new THREE.FileLoader(this.params.loadingManager);
+    const loader = new FileLoader(this.params.loadingManager);
     loader.load(
       // resource URL
       'assets/data/earth-topo.json',
@@ -62,13 +62,13 @@ export class Coastline {
         const topology = JSON.parse(data);
 
         // convert topojson to geojson
-        const geojson = topojson.feature(topology, topology.objects.coastline_10m);
+        const geojson = feature(topology, topology.objects.coastline_10m);
 
         // create coastline geometries
         const geometries = this.createCoastlineGeometries(geojson);
 
         // create coastline material
-        this.material = new THREE.RawShaderMaterial({
+        this.material = new RawShaderMaterial({
           uniforms: {
             uLineColor: {
               value: [255, 255, 255],
@@ -84,7 +84,7 @@ export class Coastline {
         // iterate over geometries
         this.meshes = [];
         for (let i = 0; i < geometries.length; i++) {
-          const mesh = new THREE.Line(geometries[i], this.material);
+          const mesh = new Line(geometries[i], this.material);
           mesh.frustumCulled = false;
           params.scene.add(mesh);
           this.meshes.push(mesh);
@@ -110,9 +110,9 @@ export class Coastline {
       // create geometry
       const points = [];
       for (const coordinate of coordinates) {
-        points.push(new THREE.Vector2(coordinate[0], coordinate[1]));
+        points.push(new Vector2(coordinate[0], coordinate[1]));
       }
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const geometry = new BufferGeometry().setFromPoints(points);
 
       // add geometry to geometries array
       geometriesArray.push(geometry);

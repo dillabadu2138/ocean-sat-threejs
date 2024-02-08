@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { BufferGeometry, BufferAttribute } from 'three';
 import { vec3, vec2 } from 'gl-matrix';
 
 export class CubeSphere {
@@ -97,11 +97,11 @@ export class CubeSphere {
     }
 
     // create geometry
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
-    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    const geometry = new BufferGeometry();
+    geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+    geometry.setAttribute('normal', new BufferAttribute(normals, 3));
+    geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
+    geometry.setIndex(new BufferAttribute(indices, 1));
 
     return geometry;
   }

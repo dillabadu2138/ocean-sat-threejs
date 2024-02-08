@@ -1,4 +1,10 @@
-import * as THREE from 'three';
+import {
+  Points,
+  InstancedBufferGeometry,
+  InstancedBufferAttribute,
+  BufferAttribute,
+  RawShaderMaterial,
+} from 'three';
 
 import { utils } from './utils';
 
@@ -84,7 +90,7 @@ export class Cloud {
 
     return Promise.all(promises).then((result) => {
       // draw points
-      this.cloudMesh = new THREE.Points(result[0], result[1]);
+      this.cloudMesh = new Points(result[0], result[1]);
       this.cloudMesh.visible = false;
       this.params.scene.add(this.cloudMesh);
 
@@ -101,7 +107,7 @@ export class Cloud {
       const rows = data.split('\n').slice(1);
 
       // create an instance of instanced buffer geometry
-      const instancedBuffergeometry = new THREE.InstancedBufferGeometry();
+      const instancedBuffergeometry = new InstancedBufferGeometry();
 
       // preallocate typed arrays
       const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
@@ -124,15 +130,15 @@ export class Cloud {
       // set attributes to this geometry
       instancedBuffergeometry.setAttribute(
         'position',
-        new THREE.BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
+        new BufferAttribute(new Float32Array([0.0, 0.0, 0.0]), 3)
       );
       instancedBuffergeometry.setAttribute(
         'instanceWorldPosition',
-        new THREE.InstancedBufferAttribute(instanceWorldPosition, 2)
+        new InstancedBufferAttribute(instanceWorldPosition, 2)
       );
       instancedBuffergeometry.setAttribute(
         'instanceCloudColor',
-        new THREE.InstancedBufferAttribute(instanceCloudColor, 3)
+        new InstancedBufferAttribute(instanceCloudColor, 3)
       );
 
       return instancedBuffergeometry;
@@ -142,7 +148,7 @@ export class Cloud {
   createMaterial(material) {
     return new Promise((resolve) => {
       // create raw shader material
-      const rawShaderMaterial = new THREE.RawShaderMaterial({
+      const rawShaderMaterial = new RawShaderMaterial({
         ...material,
       });
 
