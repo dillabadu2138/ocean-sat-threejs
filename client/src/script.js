@@ -9,7 +9,7 @@ import {
   CubeTextureLoader,
 } from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
-import { GUI } from 'lil-gui';
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 
 // components
 import { Game } from './game.js';

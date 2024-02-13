@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "gl-matrix": "^3.4.3",
-    "lil-gui": "^0.18.1",
     "three": "^0.150.1",
     "topojson-client": "^3.1.0"
   },
