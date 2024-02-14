@@ -10,8 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "gl-matrix": "^3.4.3",
-    "three": "^0.150.1",
-    "topojson-client": "^3.1.0"
+    "three": "^0.150.1"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",

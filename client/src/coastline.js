@@ -1,9 +1,4 @@
-import { FileLoader, RawShaderMaterial, Line, Vector2, BufferGeometry } from 'three';
-import { feature } from 'topojson-client';
-
-// shader
-import coastlineVertexShader from './shaders/coastline/coastline-vertex.glsl';
-import coastlineFragmentShader from './shaders/coastline/coastline-fragment.glsl';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class Coastline {
   constructor(params) {
@@ -21,7 +16,7 @@ export class Coastline {
 
   initGUI() {
     // create gui parameters for coastline
-    this.params.guiParams.coastline = this.material;
+    this.params.guiParams.coastline = this.coastline.material;
 
     // add gui for coastline
     const coastlineRollup = this.params.gui.addFolder('해안선(coastline)');
@@ -32,92 +27,49 @@ export class Coastline {
 
     // control opacity
     coastlineRollup
-      .add(this.params.guiParams.coastline.uniforms.uOpacity, 'value', 0, 1)
+      .add(this.params.guiParams.coastline, 'opacity', 0, 1)
       .step(0.01)
       .name('투명도')
       .onChange((value) => {
-        this.material.transparent = true;
-        this.material.uniforms.uOpacity.value = value;
+        this.coastline.material.transparent = true;
+        this.coastline.material.opacity = value;
+        this.coastline.material.needsUpdate = true; // required after the first render
       });
 
     // control color picking
     coastlineRollup
-      .addColor(this.params.guiParams.coastline.uniforms.uLineColor, 'value', 255)
+      .addColor(this.params.guiParams.coastline, 'color')
       .name('색상')
       .onChange((value) => {
-        this.material.uniforms.uLineColor.value = value;
+        this.coastline.material.color.setRGB(value.r, value.g, value.b);
+        this.coastline.material.needsUpdate = true; // required after the first render
       });
   }
 
   loadCoastline(params) {
-    // load a topojson file
-    const loader = new FileLoader(this.params.loadingManager);
+    // load glb file
+    const loader = new GLTFLoader(this.params.loadingManager);
     loader.load(
       // resource URL
-      'assets/data/earth-topo.json',
+      'assets/data/coastline.glb',
 
       // onLoad callback
-      (data) => {
-        // parse the data into JSON object
-        const topology = JSON.parse(data);
+      (gltf) => {
+        // extract mesh from the loaded data
+        this.coastline = gltf.scene.children[0];
 
-        // convert topojson to geojson
-        const geojson = feature(topology, topology.objects.coastline_10m);
+        // rotate by 90 degrees in Y axis
+        this.coastline.rotation.y = Math.PI / 2;
 
-        // create coastline geometries
-        const geometries = this.createCoastlineGeometries(geojson);
+        // scale up the model
+        this.coastline.scale.set(1.0001, 1.0001, 1.0001);
 
-        // create coastline material
-        this.material = new RawShaderMaterial({
-          uniforms: {
-            uLineColor: {
-              value: [255, 255, 255],
-            },
-            uOpacity: {
-              value: 1.0,
-            },
-          },
-          vertexShader: coastlineVertexShader,
-          fragmentShader: coastlineFragmentShader,
-        });
-
-        // iterate over geometries
-        this.meshes = [];
-        for (let i = 0; i < geometries.length; i++) {
-          const mesh = new Line(geometries[i], this.material);
-          mesh.frustumCulled = false;
-          params.scene.add(mesh);
-          this.meshes.push(mesh);
-        }
+        // add to scene
+        params.scene.add(this.coastline);
 
         // add dat.gui
         this.initGUI();
       }
     );
-  }
-
-  // create coastline geometries
-  createCoastlineGeometries(json) {
-    const features = json.features;
-
-    // preallocate array
-    const geometriesArray = [];
-
-    // loop over every feature
-    for (const feature of features) {
-      const coordinates = feature.geometry.coordinates;
-
-      // create geometry
-      const points = [];
-      for (const coordinate of coordinates) {
-        points.push(new Vector2(coordinate[0], coordinate[1]));
-      }
-      const geometry = new BufferGeometry().setFromPoints(points);
-
-      // add geometry to geometries array
-      geometriesArray.push(geometry);
-    }
-
-    return geometriesArray;
   }
 }
