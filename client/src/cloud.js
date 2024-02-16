@@ -1,7 +1,8 @@
 import {
   Points,
   InstancedBufferGeometry,
-  InstancedBufferAttribute,
+  InstancedInterleavedBuffer,
+  InterleavedBufferAttribute,
   BufferAttribute,
   RawShaderMaterial,
 } from 'three';
@@ -24,7 +25,7 @@ export class Cloud {
   initialize(params) {
     // set initial state
     this.initialState = {
-      geometry: { url: 'assets/data/IMGrgb_EastAsia_GK2B_GOCI2_L2_20220809_001530LA.csv' },
+      geometry: { url: 'assets/data/GK2_GOCI2_L1B_20220809_001530_LA_RGB_8bit.dat' },
       material: {
         uniforms: {
           uOpacity: { value: 1.0 },
@@ -100,32 +101,19 @@ export class Cloud {
   }
 
   createGeometry(geometry) {
-    const promise = utils.loadFile(geometry.url);
+    const promise = utils.loadBinaryFile(geometry.url);
 
-    return promise.then((data) => {
-      // skip header row
-      const rows = data.split('\n').slice(1);
-
+    return promise.then((arrayBuffer) => {
       // create an instance of instanced buffer geometry
       const instancedBuffergeometry = new InstancedBufferGeometry();
 
-      // preallocate typed arrays
-      const instanceWorldPosition = new Float32Array(rows.length * 2); // x, y
-      const instanceCloudColor = new Float32Array(rows.length * 3); // rgb
+      // the following typed arrays share the same buffer
+      const instanceWorldPosition = new Float32Array(arrayBuffer);
+      const instanceCloudColor = new Uint8Array(arrayBuffer);
 
-      // iterate over rows
-      for (let i = 0; i < rows.length; i++) {
-        const values = rows[i].split(','); // lon, lat, val
-
-        // instanced position
-        instanceWorldPosition[i * 2] = values[0]; // lon
-        instanceWorldPosition[i * 2 + 1] = values[1]; // lat
-
-        // instanced cloud rgb
-        instanceCloudColor[i * 3] = values[2];
-        instanceCloudColor[i * 3 + 1] = values[3];
-        instanceCloudColor[i * 3 + 2] = values[4];
-      }
+      // create instancedInterleavedBuffer
+      const instancedInterleavedBuffer32 = new InstancedInterleavedBuffer(instanceWorldPosition, 3);
+      const instancedInterleavedBuffer8 = new InstancedInterleavedBuffer(instanceCloudColor, 12);
 
       // set attributes to this geometry
       instancedBuffergeometry.setAttribute(
@@ -134,11 +122,21 @@ export class Cloud {
       );
       instancedBuffergeometry.setAttribute(
         'instanceWorldPosition',
-        new InstancedBufferAttribute(instanceWorldPosition, 2)
+        new InterleavedBufferAttribute(
+          instancedInterleavedBuffer32,
+          2, // itemSize
+          0, // offset (in bytes)
+          false // normalized
+        )
       );
       instancedBuffergeometry.setAttribute(
         'instanceCloudColor',
-        new InstancedBufferAttribute(instanceCloudColor, 3)
+        new InterleavedBufferAttribute(
+          instancedInterleavedBuffer8,
+          3, // itemSize
+          8, // offset (in bytes)
+          false // normalized
+        )
       );
 
       return instancedBuffergeometry;
