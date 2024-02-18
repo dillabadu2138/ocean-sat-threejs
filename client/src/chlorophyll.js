@@ -26,7 +26,7 @@ export class Chlorophyll {
       },
       material: {
         url_lut: 'assets/lut/Turbo.webp',
-        url_data: '/api/images/CHL',
+        url_data: '/api/files/image/CHL',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },

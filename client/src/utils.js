@@ -31,5 +31,10 @@ export const utils = (function () {
           );
         });
     },
+    getBinaryFile: function (url) {
+      return fetch(url, {
+        headers: { 'Content-Encoding': 'gzip', 'Content-Type': 'application/octet-stream' },
+      }).then((response) => response.arrayBuffer());
+    },
   };
 })();

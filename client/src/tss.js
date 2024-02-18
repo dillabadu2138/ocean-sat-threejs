@@ -26,7 +26,7 @@ export class Tss {
       },
       material: {
         url_lut: 'assets/lut/Plasma.webp',
-        url_data: '/api/images/TSS',
+        url_data: '/api/files/image/TSS',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },

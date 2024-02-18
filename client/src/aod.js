@@ -26,7 +26,7 @@ export class Aod {
       },
       material: {
         url_lut: 'assets/lut/Cool.webp',
-        url_data: '/api/images/AOD',
+        url_data: '/api/files/image/AOD',
         uniforms: {
           uOpacity: { value: 1.0 },
           uLutTexture: { value: null },

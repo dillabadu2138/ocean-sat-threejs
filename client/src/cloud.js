@@ -25,7 +25,7 @@ export class Cloud {
   initialize(params) {
     // set initial state
     this.initialState = {
-      geometry: { url: 'assets/data/GK2_GOCI2_L1B_20220809_001530_LA_RGB_8bit.dat' },
+      geometry: { url: 'api/files/binary/cloud' },
       material: {
         uniforms: {
           uOpacity: { value: 1.0 },
@@ -101,7 +101,7 @@ export class Cloud {
   }
 
   createGeometry(geometry) {
-    const promise = utils.loadBinaryFile(geometry.url);
+    const promise = utils.getBinaryFile(geometry.url);
 
     return promise.then((arrayBuffer) => {
       // create an instance of instanced buffer geometry

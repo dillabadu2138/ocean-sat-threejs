@@ -48,7 +48,7 @@ export class Coastline {
 
   loadCoastline(params) {
     // load glb file
-    const loader = new GLTFLoader(this.params.loadingManager);
+    const loader = new GLTFLoader();
     loader.load(
       // resource URL
       'assets/data/coastline.glb',
