@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.api.routes.images import router as images_router
+from app.api.routes.files import router as files_router
 
 router = APIRouter()
 
-router.include_router(images_router, prefix="/images", tags=["PNG 이미지"])
+router.include_router(files_router, prefix="/files", tags=["정적 서버 파일"])

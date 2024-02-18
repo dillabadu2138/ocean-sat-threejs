@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router as api_router
@@ -13,6 +14,10 @@ def get_application():
         openapi_url="/api/openapi.json",
     )
 
+    # add GZip middleware
+    app.add_middleware(GZipMiddleware, minimum_size=10240)
+
+    # add CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
