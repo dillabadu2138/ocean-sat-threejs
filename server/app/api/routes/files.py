@@ -23,7 +23,7 @@ async def get_all_static_files() -> List[dict]:
     responses={
         200: {
             "content": {
-                "image/png": {},
+                "image/webp": {},
                 "description": "Return an image",
             }
         }
@@ -33,12 +33,12 @@ async def get_an_image(
     variable: str = Path(..., description="The name of variable to get")
 ):
     # get filename by variable
-    filename = glob.glob(f"static/{variable}/*.png")[0]
+    filename = glob.glob(f"static/{variable}/*.webp")[0]
 
     with open(filename, "rb") as f:
         data = f.read()
 
-    return Response(content=data, media_type="image/png")
+    return Response(content=data, media_type="image/webp")
 
 
 @router.get(
