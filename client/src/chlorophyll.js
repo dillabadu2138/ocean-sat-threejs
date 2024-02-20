@@ -19,10 +19,10 @@ export class Chlorophyll {
     // set initial state
     this.initialState = {
       raster: {
-        width: 3000,
-        height: 2800,
-        scaleX: 0.01,
-        scaleY: 0.01,
+        width: 1500,
+        height: 1400,
+        scaleX: 0.02,
+        scaleY: 0.02,
       },
       material: {
         url_lut: 'assets/lut/Turbo.webp',
