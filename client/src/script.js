@@ -1,14 +1,6 @@
 import './styles.css';
-import {
-  AmbientLight,
-  TextureLoader,
-  LinearMipmapLinearFilter,
-  LinearFilter,
-  RawShaderMaterial,
-  Mesh,
-  CubeTextureLoader,
-} from 'three';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { AmbientLight, TextureLoader, RawShaderMaterial, Mesh, CubeTextureLoader } from 'three';
+import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 
 // components
@@ -137,51 +129,6 @@ class OceanSatelliteDemo extends Game {
       .name('카메라 절두체 원평면(far)')
       .onChange(() => this.guiParams.camera.updateProjectionMatrix());
     cameraRollup.close();
-
-    // define new properties directly on an object create a helper object with getter and setter
-    Object.defineProperties(this.guiParams.camera, {
-      // getter and setter for positionX
-      positionX: {
-        get: function () {
-          return this.position.x;
-        },
-        set: function (value) {
-          this.position.x = value;
-        },
-      },
-      // the getter and setter for positionY
-      positionY: {
-        get: function () {
-          return this.position.y;
-        },
-        set: function (value) {
-          this.position.y = value;
-        },
-      },
-      // the getter and setter for positionZ
-      positionZ: {
-        get: function () {
-          return this.position.z;
-        },
-        set: function (value) {
-          this.position.z = value;
-        },
-      },
-    });
-
-    // add gui for camera position
-    cameraRollup
-      .add(this.guiParams.camera, 'positionX', -10, 10)
-      .name('카메라 X 위치(positionX)')
-      .onChange(() => this.guiParams.camera.updateMatrixWorld());
-    cameraRollup
-      .add(this.guiParams.camera, 'positionY', -10, 10)
-      .name('카메라 Y 위치(positionY)')
-      .onChange(() => this.guiParams.camera.updateMatrixWorld());
-    cameraRollup
-      .add(this.guiParams.camera, 'positionZ', -10, 10)
-      .name('카메라 Z 위치(positionZ)')
-      .onChange(() => this.guiParams.camera.updateMatrixWorld());
   }
 
   loadEarth() {
@@ -190,26 +137,16 @@ class OceanSatelliteDemo extends Game {
     this.cubeSphere = new CubeSphere(resolution);
 
     // combine all geometries into one geometry
-    const earthGeometry = BufferGeometryUtils.mergeBufferGeometries([
-      ...this.cubeSphere.geometries,
-    ]);
+    const earthGeometry = mergeBufferGeometries([...this.cubeSphere.geometries]);
 
     // load textures
     const colorMapTexture = new TextureLoader(this.graphics.loadingManager).load(
       'assets/images/world.topo.bathy.200409.3x5400x2700.webp'
     );
-    colorMapTexture.minFilter = LinearMipmapLinearFilter;
-    // colorMapTexture.magFilter = NearestFilter;
-    colorMapTexture.magFilter = LinearFilter;
-    colorMapTexture.generateMipmaps = false;
 
     const heightMapTexture = new TextureLoader(this.graphics.loadingManager).load(
       'assets/images/gebco_bathy.5400x2700_8bit.webp'
     );
-    heightMapTexture.minFilter = LinearMipmapLinearFilter;
-    // heightMapTexture.magFilter = NearestFilter;
-    heightMapTexture.magFilter = LinearFilter;
-    heightMapTexture.generateMipmaps = false;
 
     // create material
     const material = new RawShaderMaterial({
