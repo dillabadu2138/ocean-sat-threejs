@@ -3,10 +3,10 @@ import { Mesh, BufferGeometry, BufferAttribute, NearestFilter, RawShaderMaterial
 import { utils } from './utils';
 
 // shader
-import aodVertexShader from './shaders/aod/aod-vertex.glsl';
-import aodFragmentShader from './shaders/aod/aod-fragment.glsl';
+import rgbVertexShader from './shaders/rgb/rgb-vertex.glsl';
+import rgbFragmentShader from './shaders/rgb/rgb-fragment.glsl';
 
-export class Aod {
+export class Rgb {
   constructor(params) {
     // create instance properties
     this.params = params;
@@ -19,27 +19,23 @@ export class Aod {
     // set initial state
     this.initialState = {
       raster: {
-        width: 300,
-        height: 280,
-        scaleX: 0.1,
-        scaleY: 0.1,
+        width: 1500,
+        height: 1400,
+        scaleX: 0.02,
+        scaleY: 0.02,
       },
       material: {
-        url_lut: 'assets/lut/Cool.webp',
-        url_data: '/api/files/image/AOD',
+        url_data: 'api/files/image/RGB',
         uniforms: {
           uOpacity: { value: 1.0 },
-          uLutTexture: { value: null },
           uDataTexture: { value: null },
-          uColorRangeMin: { value: 0 },
-          uColorRangeMax: { value: 2 },
           // [minX, minY, maxX, maxY]
           uImageBounds: {
             value: [116.0, 22.0, 146.0, 50.0],
           },
         },
-        vertexShader: aodVertexShader,
-        fragmentShader: aodFragmentShader,
+        vertexShader: rgbVertexShader,
+        fragmentShader: rgbFragmentShader,
       },
     };
 
@@ -48,47 +44,34 @@ export class Aod {
   }
 
   initGUI() {
-    // create gui parameters for AOD
-    this.params.guiParams.aod = this.aodMesh;
+    // create gui parameters for rgb
+    this.params.guiParams.rgb = this.rgbMesh;
 
-    // add gui for AOD
-    const aodRollup = this.params.gui.addFolder('에어로졸 광학 두께(AOD)');
-    aodRollup.close();
+    // add gui for cloud
+    const rgbRollup = this.params.gui.addFolder('RGB 8bit 이미지');
+    rgbRollup.close();
 
     // control visibility
-    aodRollup.add(this.params.guiParams.aod, 'visible').name('활성화');
+    rgbRollup.add(this.params.guiParams.rgb, 'visible').name('활성화');
 
     // control opacity
-    aodRollup
-      .add(this.params.guiParams.aod.material.uniforms.uOpacity, 'value', 0, 1)
+    rgbRollup
+      .add(this.params.guiParams.rgb.material.uniforms.uOpacity, 'value', 0, 1)
       .step(0.01)
       .name('투명도')
       .onChange((value) => {
-        this.aodMesh.material.transparent = true;
-        this.aodMesh.material.uniforms.uOpacity.value = value;
+        this.rgbMesh.material.transparent = true;
+        this.rgbMesh.material.uniforms.uOpacity.value = value;
       });
-
-    // control colorRange minimum
-    aodRollup
-      .add(this.params.guiParams.aod.material.uniforms.uColorRangeMin, 'value', 0, 1)
-      .name('범위 최솟값');
-
-    // control colorRange maximum
-    aodRollup
-      .add(this.params.guiParams.aod.material.uniforms.uColorRangeMax, 'value', 1, 5)
-      .name('범위 최댓값');
   }
 
   createMesh(state) {
     const promises = [this.createGeometry(), this.createMaterial(state.material)];
 
     return Promise.all(promises).then((result) => {
-      // draw
-      this.aodMesh = new Mesh(result[0], result[1]);
-      this.aodMesh.frustumCulled = false;
-      this.aodMesh.material.depthTest = false;
-      this.aodMesh.visible = false;
-      this.params.scene.add(this.aodMesh);
+      this.rgbMesh = new Mesh(result[0], result[1]);
+      this.rgbMesh.frustumCulled = false;
+      this.params.scene.add(this.rgbMesh);
 
       // add dat.gui
       this.initGUI();
@@ -144,22 +127,20 @@ export class Aod {
   }
 
   createMaterial(material) {
-    const promises = [utils.getTexture(material.url_data), utils.loadTexture(material.url_lut)];
+    const promise = utils.getTexture(material.url_data);
 
-    return Promise.all(promises).then((textures) => {
-      textures[0].flipY = false;
-      textures[0].generateMipmaps = false;
-      textures[0].magFilter = NearestFilter;
-      textures[0].minFilter = NearestFilter;
+    return promise.then((texture) => {
+      texture.flipY = false;
+      texture.generateMipmaps = false;
+      texture.magFilter = NearestFilter;
+      texture.minFilter = NearestFilter;
 
       // create uniforms properties
       const uniformsProperties = {};
       Object.keys(material.uniforms).map((key) => {
         // copy and update value
         if (key === 'uDataTexture') {
-          uniformsProperties[key] = { ...material.uniforms[key], value: textures[0] };
-        } else if (key === 'uLutTexture') {
-          uniformsProperties[key] = { ...material.uniforms[key], value: textures[1] };
+          uniformsProperties[key] = { ...material.uniforms[key], value: texture };
         } else {
           // just copy the value otherwise
           uniformsProperties[key] = material.uniforms[key];

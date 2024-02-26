@@ -52,7 +52,7 @@ export class Chlorophyll {
     this.params.guiParams.chlorophyll = this.chlMesh;
 
     // add gui for chloropyhll
-    const chlRollup = this.params.gui.addFolder('클로로필 분포(Chlorophyll concentration)');
+    const chlRollup = this.params.gui.addFolder('클로로필 분포(Chlorophyll)');
     chlRollup.close();
 
     // control visibility
@@ -83,11 +83,11 @@ export class Chlorophyll {
     const promises = [this.createGeometry(), this.createMaterial(state.material)];
 
     return Promise.all(promises).then((result) => {
-      // draw points
+      // draw
       this.chlMesh = new Mesh(result[0], result[1]);
       this.chlMesh.frustumCulled = false;
       this.chlMesh.material.depthTest = false;
-      this.chlMesh.visible = false;
+      this.chlMesh.visible = true;
       this.params.scene.add(this.chlMesh);
 
       // add dat.gui

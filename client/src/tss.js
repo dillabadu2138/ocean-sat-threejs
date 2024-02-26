@@ -83,7 +83,7 @@ export class Tss {
     const promises = [this.createGeometry(), this.createMaterial(state.material)];
 
     return Promise.all(promises).then((result) => {
-      // draw points
+      // draw
       this.tssMesh = new Mesh(result[0], result[1]);
       this.tssMesh.frustumCulled = false;
       this.tssMesh.material.depthTest = false;

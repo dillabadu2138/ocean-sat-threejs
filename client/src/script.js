@@ -8,8 +8,8 @@ import { Game } from './game.js';
 import { CubeSphere } from './cubeSphere.js';
 import { controls } from './controls.js';
 import { Coastline } from './coastline.js';
+import { Rgb } from './rgb.js';
 import { Chlorophyll } from './chlorophyll.js';
-import { Cloud } from './cloud.js';
 import { Tss } from './tss.js';
 import { Aod } from './aod.js';
 
@@ -49,10 +49,10 @@ class OceanSatelliteDemo extends Game {
       })
     );
 
-    // add chlorophyll
+    // add rgb
     this.addEntity(
-      'chlorophyll',
-      new Chlorophyll({
+      'rgb',
+      new Rgb({
         scene: this.graphics.scene,
         loadingManager: this.graphics.loadingManager,
         gui: this.gui,
@@ -60,10 +60,10 @@ class OceanSatelliteDemo extends Game {
       })
     );
 
-    // add cloud
+    // add chlorophyll
     this.addEntity(
-      'cloud',
-      new Cloud({
+      'chlorophyll',
+      new Chlorophyll({
         scene: this.graphics.scene,
         loadingManager: this.graphics.loadingManager,
         gui: this.gui,
