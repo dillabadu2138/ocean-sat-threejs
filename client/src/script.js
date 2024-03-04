@@ -1,5 +1,13 @@
 import './styles.css';
-import { AmbientLight, TextureLoader, RawShaderMaterial, Mesh, CubeTextureLoader } from 'three';
+import {
+  AmbientLight,
+  TextureLoader,
+  RawShaderMaterial,
+  Mesh,
+  CubeTextureLoader,
+  BufferGeometry,
+  BufferAttribute,
+} from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 
@@ -26,6 +34,19 @@ class OceanSatelliteDemo extends Game {
   onInitialize() {
     // create GUI
     this.createGUI();
+
+    // add light
+    const light = new AmbientLight(0xffffff);
+    this.graphics.scene.add(light);
+
+    // load Earth
+    this.loadEarth();
+
+    // load space cube texture background and add to scene
+    this.loadSpaceCubeTexture();
+
+    // create variable geometry
+    this.createVariableGeometry(1500, 1400, 0.02, 0.02, 116.0, 22.0);
 
     // create controls
     this.addEntity(
@@ -54,7 +75,7 @@ class OceanSatelliteDemo extends Game {
       'rgb',
       new Rgb({
         scene: this.graphics.scene,
-        loadingManager: this.graphics.loadingManager,
+        geometry: this.varGeometry,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -65,7 +86,7 @@ class OceanSatelliteDemo extends Game {
       'chlorophyll',
       new Chlorophyll({
         scene: this.graphics.scene,
-        loadingManager: this.graphics.loadingManager,
+        geometry: this.varGeometry,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -76,7 +97,7 @@ class OceanSatelliteDemo extends Game {
       'tss',
       new Tss({
         scene: this.graphics.scene,
-        loadingManager: this.graphics.loadingManager,
+        geometry: this.varGeometry,
         gui: this.gui,
         guiParams: this.guiParams,
       })
@@ -87,21 +108,10 @@ class OceanSatelliteDemo extends Game {
       'aod',
       new Aod({
         scene: this.graphics.scene,
-        loadingManager: this.graphics.loadingManager,
         gui: this.gui,
         guiParams: this.guiParams,
       })
     );
-
-    // add light
-    const light = new AmbientLight(0xffffff);
-    this.graphics.scene.add(light);
-
-    // load Earth
-    this.loadEarth();
-
-    // load space cube texture background and add to scene
-    this.loadSpaceCubeTexture();
   }
 
   createGUI() {
@@ -212,6 +222,45 @@ class OceanSatelliteDemo extends Game {
       './assets/images/space-negz.webp',
     ]);
     this.graphics.scene.background = cubeTexture;
+  }
+
+  createVariableGeometry(width, height, scaleX, scaleY, llX, llY) {
+    // create an instance of buffer geometry
+    this.varGeometry = new BufferGeometry();
+
+    // create vertices and indices
+    const positions = new Float32Array(width * height * 3);
+    const indices = new Uint32Array((width - 1) * (height - 1) * 2 * 3); // times 6 because of two triangles
+    let triangleIndex = 0;
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < height; j++) {
+        // create vertices
+        const index = (i + j * width) * 3;
+        positions[index + 0] = llX + i * scaleX;
+        positions[index + 1] = llY + j * scaleY;
+        positions[index + 2] = 0;
+
+        // create indices
+        const cur_ind = i + j * width;
+
+        if (i !== width - 1 && j !== height - 1) {
+          // first triangle
+          indices[triangleIndex] = cur_ind;
+          indices[triangleIndex + 1] = cur_ind + width + 1;
+          indices[triangleIndex + 2] = cur_ind + width;
+          // second triangle
+          indices[triangleIndex + 3] = cur_ind;
+          indices[triangleIndex + 4] = cur_ind + 1;
+          indices[triangleIndex + 5] = cur_ind + width + 1;
+
+          triangleIndex += 6;
+        }
+      }
+    }
+
+    // set attributes to this geometry
+    this.varGeometry.setAttribute('position', new BufferAttribute(positions, 3));
+    this.varGeometry.setIndex(new BufferAttribute(indices, 1));
   }
 }
 

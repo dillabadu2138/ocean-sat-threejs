@@ -32,7 +32,7 @@ export class Aod {
           uLutTexture: { value: null },
           uDataTexture: { value: null },
           uColorRangeMin: { value: 0 },
-          uColorRangeMax: { value: 2 },
+          uColorRangeMax: { value: 1 },
           // [minX, minY, maxX, maxY]
           uImageBounds: {
             value: [116.0, 22.0, 146.0, 50.0],
