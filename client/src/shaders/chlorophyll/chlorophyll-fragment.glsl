@@ -41,5 +41,5 @@ void main() {
   // use the pixel value to look up a color from lut texture
   vec4 color = texture(uLutTexture, vec2(pixel, 0.5));
 
-  fragColor = vec4(color.rgb, color.a * uOpacity);
+  fragColor = vec4(color);
 }

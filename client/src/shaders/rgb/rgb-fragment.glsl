@@ -3,7 +3,6 @@
 precision highp float;
 
 // uniforms
-uniform float uOpacity;
 uniform sampler2D uDataTexture;
 uniform vec4 uImageBounds;
 
@@ -32,5 +31,5 @@ void main() {
     discard;
   }
 
-  fragColor = vec4(texel.rgb, uOpacity);
+  fragColor = vec4(texel.rgb, 1.0);
 }

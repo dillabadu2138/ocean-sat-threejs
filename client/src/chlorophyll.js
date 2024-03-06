@@ -22,7 +22,6 @@ export class Chlorophyll {
         url_lut: 'assets/lut/Turbo.webp',
         url_data: '/api/files/image/CHL',
         uniforms: {
-          uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
           uDataTexture: { value: null },
           uColorRangeMin: { value: 0 },
@@ -52,16 +51,6 @@ export class Chlorophyll {
     // control visibility
     chlRollup.add(this.params.guiParams.chlorophyll, 'visible').name('활성화');
 
-    // control opacity
-    chlRollup
-      .add(this.params.guiParams.chlorophyll.material.uniforms.uOpacity, 'value', 0, 1)
-      .step(0.01)
-      .name('투명도')
-      .onChange((value) => {
-        this.chlMesh.material.transparent = true;
-        this.chlMesh.material.uniforms.uOpacity.value = value;
-      });
-
     // control colorRange minimum
     chlRollup
       .add(this.params.guiParams.chlorophyll.material.uniforms.uColorRangeMin, 'value', 0, 1)
@@ -81,6 +70,7 @@ export class Chlorophyll {
       this.chlMesh = new Mesh(this.params.geometry, result);
       this.chlMesh.frustumCulled = false;
       this.chlMesh.material.depthTest = false;
+      this.chlMesh.renderOrder = 2;
       this.chlMesh.visible = true;
       this.params.scene.add(this.chlMesh);
 

@@ -21,7 +21,6 @@ export class Rgb {
       material: {
         url_data: 'api/files/image/RGB',
         uniforms: {
-          uOpacity: { value: 1.0 },
           uDataTexture: { value: null },
           // [minX, minY, maxX, maxY]
           uImageBounds: {
@@ -47,16 +46,6 @@ export class Rgb {
 
     // control visibility
     rgbRollup.add(this.params.guiParams.rgb, 'visible').name('활성화');
-
-    // control opacity
-    rgbRollup
-      .add(this.params.guiParams.rgb.material.uniforms.uOpacity, 'value', 0, 1)
-      .step(0.01)
-      .name('투명도')
-      .onChange((value) => {
-        this.rgbMesh.material.transparent = true;
-        this.rgbMesh.material.uniforms.uOpacity.value = value;
-      });
   }
 
   createMesh(state) {
@@ -65,6 +54,7 @@ export class Rgb {
     return promise.then((result) => {
       this.rgbMesh = new Mesh(this.params.geometry, result);
       this.rgbMesh.frustumCulled = false;
+      this.rgbMesh.renderOrder = 1;
       this.params.scene.add(this.rgbMesh);
 
       // add dat.gui

@@ -28,7 +28,6 @@ export class Aod {
         url_lut: 'assets/lut/Cool.webp',
         url_data: '/api/files/image/AOD',
         uniforms: {
-          uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
           uDataTexture: { value: null },
           uColorRangeMin: { value: 0 },
@@ -58,16 +57,6 @@ export class Aod {
     // control visibility
     aodRollup.add(this.params.guiParams.aod, 'visible').name('활성화');
 
-    // control opacity
-    aodRollup
-      .add(this.params.guiParams.aod.material.uniforms.uOpacity, 'value', 0, 1)
-      .step(0.01)
-      .name('투명도')
-      .onChange((value) => {
-        this.aodMesh.material.transparent = true;
-        this.aodMesh.material.uniforms.uOpacity.value = value;
-      });
-
     // control colorRange minimum
     aodRollup
       .add(this.params.guiParams.aod.material.uniforms.uColorRangeMin, 'value', 0, 1)
@@ -87,6 +76,7 @@ export class Aod {
       this.aodMesh = new Mesh(result[0], result[1]);
       this.aodMesh.frustumCulled = false;
       this.aodMesh.material.depthTest = false;
+      this.aodMesh.renderOrder = 4;
       this.aodMesh.visible = false;
       this.params.scene.add(this.aodMesh);
 

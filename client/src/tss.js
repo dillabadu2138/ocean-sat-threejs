@@ -22,7 +22,6 @@ export class Tss {
         url_lut: 'assets/lut/Plasma.webp',
         url_data: '/api/files/image/TSS',
         uniforms: {
-          uOpacity: { value: 1.0 },
           uLutTexture: { value: null },
           uDataTexture: { value: null },
           uColorRangeMin: { value: 0 },
@@ -52,16 +51,6 @@ export class Tss {
     // control visibility
     tssRollup.add(this.params.guiParams.tss, 'visible').name('활성화');
 
-    // control opacity
-    tssRollup
-      .add(this.params.guiParams.tss.material.uniforms.uOpacity, 'value', 0, 1)
-      .step(0.01)
-      .name('투명도')
-      .onChange((value) => {
-        this.tssMesh.material.transparent = true;
-        this.tssMesh.material.uniforms.uOpacity.value = value;
-      });
-
     // control colorRange minimum
     tssRollup
       .add(this.params.guiParams.tss.material.uniforms.uColorRangeMin, 'value', 0, 1)
@@ -81,6 +70,7 @@ export class Tss {
       this.tssMesh = new Mesh(this.params.geometry, result);
       this.tssMesh.frustumCulled = false;
       this.tssMesh.material.depthTest = false;
+      this.tssMesh.renderOrder = 3;
       this.tssMesh.visible = false;
       this.params.scene.add(this.tssMesh);
 
