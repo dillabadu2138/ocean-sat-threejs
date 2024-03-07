@@ -1,0 +1,79 @@
+version: '3.9'
+
+services:
+  ###########################
+  #   traefik container
+  ###########################
+  traefik:
+    # pull the official v2 Traefik docker image
+    image: 'traefik:v2.9'
+    ports:
+      - '80:80'
+      - '443:443'
+    command:
+      # enable Docker in Traefik, so that it reads labels from Docker services
+      - '--providers.docker=true'
+      # do not expose all containers unless explicitly told so
+      - '--providers.docker.exposedbydefault=false'
+      # create an entrypoint "web" listening on port 80 and enable permanent redirecting of all incoming requests on an entypoint "web" to another entrypoint websecure
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entryPoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entryPoint.scheme=https'
+      # create an entrypoint "websecure" listening on port 443
+      - '--entrypoints.websecure.address=:443'
+      # define a certificate resolver "myresolver" and set an email address used  for registration
+      - '--certificatesresolvers.myresolver.acme.email=aaronkang2138@gmail.com'
+      # set the location where your ACME certificates are saved to
+      - '--certificatesresolvers.myresolver.acme.storage=/certificates/acme.json'
+      # use the tls challenge for Let's Encrypt
+      - '--certificatesresolvers.myresolver.acme.tlschallenge=true'
+      - --log.level=INFO
+    volumes:
+      # add Docker as a mounted volume, so that Traefik can read the labels of other services
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      # add a volume to store the certificates
+      - './certificates:/certificates'
+
+  ###########################
+  #   client container
+  ###########################
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile-prod
+    labels:
+      # explicitly tell Traefik to expose this container
+      - 'traefik.enable=true'
+      # specify the rule used to match a request to this service
+      - 'traefik.http.routers.client.rule=Host(`all4ocean.com`)'
+      # allow request only from the predefined entry point named "websecure"
+      - 'traefik.http.routers.client.entrypoints=websecure'
+      # reference the resolver
+      - 'traefik.http.routers.client.tls=true'
+      - 'traefik.http.routers.client.tls.certresolver=myresolver'
+      # set port the container listens to
+      - 'traefik.http.services.client.loadbalancer.server.port=3000'
+
+  ###########################
+  #   server container
+  ###########################
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: hypercorn app.api.server:app --workers 4 --worker-class trio --bind 0.0.0.0:8000
+    volumes:
+      # hostPath:containerPath:mode
+      - ./server:/server:consistent
+    labels:
+      # explicitly tell Traefik to expose this container
+      - 'traefik.enable=true'
+      # specify the rule used to match a request to this service
+      - 'traefik.http.routers.server.rule=Host(`all4ocean.com`) && PathPrefix(`/api`)'
+      # allow request only from the predefined entry point named "websecure"
+      - 'traefik.http.routers.server.entrypoints=websecure'
+      # reference the resolver
+      - 'traefik.http.routers.server.tls=true'
+      - 'traefik.http.routers.server.tls.certresolver=myresolver'
+      # set port the container listens to
+      - 'traefik.http.services.server.loadbalancer.server.port=8000'

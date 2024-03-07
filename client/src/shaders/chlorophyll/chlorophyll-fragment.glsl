@@ -3,7 +3,6 @@
 precision highp float;
 
 // uniforms
-uniform float uOpacity;
 uniform sampler2D uDataTexture;
 uniform sampler2D uLutTexture;
 uniform float uColorRangeMin;
